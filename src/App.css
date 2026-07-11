@@ -193,6 +193,143 @@
   display: inline-block !important;
 }
 
+.article-editor .ql-toolbar.ql-snow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 10px;
+  border: 0;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  font-family: inherit;
+}
+
+.article-editor .ql-container.ql-snow {
+  height: auto;
+  min-height: 0;
+  border: 0;
+  font-family: inherit;
+}
+
+.article-editor .ql-editor {
+  height: auto;
+  min-height: 140px;
+  overflow-y: visible;
+  padding: 16px;
+  direction: rtl;
+  text-align: right;
+  color: #374151;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 2;
+}
+
+.article-editor .ql-editor.ql-blank::before {
+  right: 16px;
+  left: auto;
+  color: #d1d5db;
+  font-family: inherit;
+  font-style: normal;
+  text-align: right;
+}
+
+.article-editor .ql-editor h1,
+.article-editor .ql-editor h2,
+.article-editor .ql-editor h3 {
+  line-height: 1.7;
+}
+
+.article-editor .ql-editor ol,
+.article-editor .ql-editor ul {
+  padding-right: 1.5em;
+  padding-left: 0;
+}
+
+.article-editor .ql-editor a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.article-editor .ql-editor blockquote {
+  margin: 16px 0;
+  padding: 8px 16px;
+  border-right: 4px solid #9a6b3d;
+  border-left: 0;
+  background-color: #f9fafb;
+  color: #4b5563;
+}
+
+.article-editor .ql-editor pre.ql-syntax {
+  direction: ltr;
+  text-align: left;
+  border-radius: 6px;
+  background-color: #111827;
+  color: #f9fafb;
+  font-size: 13px;
+}
+
+.article-editor .ql-snow .ql-picker {
+  color: #4b5563;
+  font-family: inherit;
+}
+
+.article-editor .ql-snow .ql-picker-options {
+  right: 0;
+  left: auto;
+  font-family: inherit;
+}
+
+.article-editor .ql-snow .ql-stroke {
+  stroke: #4b5563;
+}
+
+.article-editor .ql-snow .ql-fill {
+  fill: #4b5563;
+}
+
+.article-editor .ql-snow button:hover .ql-stroke,
+.article-editor .ql-snow button.ql-active .ql-stroke {
+  stroke: var(--color-main, #9a6b3d);
+}
+
+.article-editor .ql-snow button:hover .ql-fill,
+.article-editor .ql-snow button.ql-active .ql-fill {
+  fill: var(--color-main, #9a6b3d);
+}
+
+.article-editor .ql-toolbar button {
+  border-radius: 4px;
+}
+
+.article-editor .ql-toolbar button:hover,
+.article-editor .ql-toolbar button.ql-active {
+  background-color: #f3f4f6;
+}
+
+.article-editor .ql-tooltip {
+  right: 16px !important;
+  left: auto !important;
+  font-family: inherit;
+}
+
+.article-editor .ql-tooltip input {
+  direction: ltr;
+  text-align: left;
+}
+
+@media (max-width: 640px) {
+  .article-editor .ql-toolbar.ql-snow {
+    gap: 2px;
+    padding: 8px;
+  }
+
+  .article-editor .ql-editor {
+    min-height: 120px;
+  }
+}
+
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

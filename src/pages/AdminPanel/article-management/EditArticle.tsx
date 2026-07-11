@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useMemo, useRef, useState } from "react";
+import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,9 +10,12 @@ import {
     FileText,
     FolderOpen,
     Image as ImageIcon,
-    Send,
-    Upload,
+    Save,
     User,
+    Eye,
+    Clock3,
+    CheckCircle2,
+    Upload,
     X,
 } from "lucide-react";
 
@@ -28,6 +31,18 @@ import {
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
+
+const categoryOptions = [
+    { label: "راهنما و آموزش", value: "guide" },
+    { label: "اخبار", value: "news" },
+    { label: "مقالات آموزشی", value: "education" },
+];
+
+const statusOptions = [
+    { label: "پیش‌نویس", value: "draft" },
+    { label: "منتشر شده", value: "published" },
+    { label: "در انتظار بررسی", value: "review" },
+] as const;
 
 const quillModules = {
     toolbar: [
@@ -86,35 +101,58 @@ const articleSchema = z.object({
         .string()
         .refine(
             (value) => getPlainText(value).length > 0,
-            "برای انتشار، محتوای مقاله الزامی است."
+            "برای ذخیره، محتوای مقاله الزامی است."
         ),
     category: z
         .string()
         .trim()
-        .min(1, "برای انتشار، دسته‌بندی مقاله را انتخاب کنید."),
+        .min(1, "لطفاً دسته‌بندی مقاله را انتخاب کنید."),
     author: z.string().trim().optional(),
+    status: z.enum(["draft", "published", "review"], {
+        errorMap: () => ({ message: "لطفاً وضعیت مقاله را انتخاب کنید." }),
+    }),
+    updatedAt: z.string().optional(),
     featuredImage: z
-        .instanceof(File)
-        .nullable()
+        .union([z.instanceof(File), z.null()])
         .optional()
         .refine(
-            (file) => !file || ALLOWED_IMAGE_TYPES.includes(file.type as (typeof ALLOWED_IMAGE_TYPES)[number]),
+            (file) =>
+                !file ||
+                ALLOWED_IMAGE_TYPES.includes(
+                    file.type as (typeof ALLOWED_IMAGE_TYPES)[number]
+                ),
             "فرمت تصویر باید JPG، PNG یا WEBP باشد."
         )
         .refine(
             (file) => !file || file.size <= MAX_IMAGE_SIZE,
             "حجم تصویر نباید بیشتر از ۱۰ مگابایت باشد."
         ),
+    featuredImageUrl: z.string().nullable().optional(),
 });
 
 type ArticleFormValues = z.infer<typeof articleSchema>;
-type PublishStatus = "published" | "draft";
+type ArticleStatus = "draft" | "published" | "review";
 
-const AddArticle: React.FC = () => {
+const EditArticle: React.FC = () => {
     const imageInputRef = useRef<HTMLInputElement>(null);
+
     const [imagePreview, setImagePreview] = useState("");
     const [submitError, setSubmitError] = useState("");
     const [isDraftSaving, setIsDraftSaving] = useState(false);
+
+    const initialData: ArticleFormValues = {
+        title: "راهنمای کامل انتخاب مبل مناسب برای خانه مدرن",
+        content: `<p>انتخاب مبل مناسب یکی از مهم‌ترین تصمیمات در طراحی داخلی است، به‌خصوص اگر فضای شما زیبا و فضایی دلنشین باشد.</p>
+<p>در این راهنما، نکات کلیدی برای انتخاب مبل مناسب با توجه به سبک، فضا و نیازهای شما را بررسی می‌کنیم.</p>
+<p>۱. اندازه فضا را در نظر بگیرید</p>
+<p>قبل از خرید مبل، ابعاد فضای نشیمن خود را اندازه‌گیری کنید. برای فضاهای کوچک، مبل‌های مینیمال و تاشو، انتخاب‌های بهتری هستند.</p>`,
+        category: "guide",
+        author: "سینا یوسفی",
+        status: "draft",
+        updatedAt: "۱۴۰۳/۰۳/۲۵ | ۱۶:۴۲:۳۵",
+        featuredImage: null,
+        featuredImageUrl: "/Images/product-15.png",
+    };
 
     const {
         control,
@@ -126,18 +164,26 @@ const AddArticle: React.FC = () => {
         formState: { errors, isSubmitting },
     } = useForm<ArticleFormValues>({
         resolver: zodResolver(articleSchema),
-        defaultValues: {
-            title: "",
-            content: "",
-            category: "",
-            author: "",
-            featuredImage: null,
-        },
+        defaultValues: initialData,
         mode: "onSubmit",
     });
 
     const contentValue = watch("content");
     const featuredImage = watch("featuredImage");
+    const featuredImageUrl = watch("featuredImageUrl");
+
+    useEffect(() => {
+        if (featuredImage) {
+            const objectUrl = URL.createObjectURL(featuredImage);
+            setImagePreview(objectUrl);
+
+            return () => {
+                URL.revokeObjectURL(objectUrl);
+            };
+        }
+
+        setImagePreview(featuredImageUrl || "");
+    }, [featuredImage, featuredImageUrl]);
 
     const wordCount = useMemo(() => {
         const plainText = getPlainText(contentValue || "");
@@ -154,7 +200,11 @@ const AddArticle: React.FC = () => {
             return;
         }
 
-        if (!ALLOWED_IMAGE_TYPES.includes(selectedFile.type as (typeof ALLOWED_IMAGE_TYPES)[number])) {
+        if (
+            !ALLOWED_IMAGE_TYPES.includes(
+                selectedFile.type as (typeof ALLOWED_IMAGE_TYPES)[number]
+            )
+        ) {
             setError("featuredImage", {
                 type: "manual",
                 message: "فرمت تصویر باید JPG، PNG یا WEBP باشد.",
@@ -172,25 +222,17 @@ const AddArticle: React.FC = () => {
             return;
         }
 
-        if (imagePreview) {
-            URL.revokeObjectURL(imagePreview);
-        }
-
-        const previewUrl = URL.createObjectURL(selectedFile);
-
-        setImagePreview(previewUrl);
         setValue("featuredImage", selectedFile, { shouldValidate: true });
+        setValue("featuredImageUrl", null, { shouldValidate: false });
         clearErrors("featuredImage");
+        setSubmitError("");
     };
 
     const handleRemoveFeaturedImage = () => {
-        if (imagePreview) {
-            URL.revokeObjectURL(imagePreview);
-        }
-
-        setImagePreview("");
         setValue("featuredImage", null, { shouldValidate: true });
+        setValue("featuredImageUrl", null, { shouldValidate: false });
         clearErrors("featuredImage");
+        setSubmitError("");
 
         if (imageInputRef.current) {
             imageInputRef.current.value = "";
@@ -199,47 +241,54 @@ const AddArticle: React.FC = () => {
 
     const saveArticle = async (
         values: ArticleFormValues,
-        status: PublishStatus
+        overrideStatus?: ArticleStatus
     ) => {
         try {
             setSubmitError("");
+
+            const finalStatus = overrideStatus || values.status;
 
             const requestData = new FormData();
             requestData.append("title", values.title.trim());
             requestData.append("content", values.content);
             requestData.append("category", values.category);
             requestData.append("author", values.author?.trim() || "");
-            requestData.append("status", status);
+            requestData.append("status", finalStatus);
+            requestData.append("updatedAt", values.updatedAt || "");
 
             if (values.featuredImage) {
                 requestData.append("featuredImage", values.featuredImage);
             }
 
+            if (!values.featuredImage && values.featuredImageUrl) {
+                requestData.append("featuredImageUrl", values.featuredImageUrl);
+            }
+
             /*
              * این بخش را با API واقعی پروژه جایگزین کن.
              *
-             * await fetch("/api/articles", {
-             *     method: "POST",
+             * await fetch(`/api/articles/${articleId}`, {
+             *     method: "PUT",
              *     body: requestData,
              * });
              */
 
-            console.log("Article status:", status);
+            console.log("Article status:", finalStatus);
             console.log(
-                "Article data:",
+                "Edit article data:",
                 Object.fromEntries(requestData.entries())
             );
         } catch (error) {
-            console.error("Failed to save article:", error);
-            setSubmitError("ذخیره مقاله با خطا مواجه شد. دوباره تلاش کنید.");
+            console.error("Failed to update article:", error);
+            setSubmitError("ذخیره تغییرات با خطا مواجه شد. دوباره تلاش کنید.");
         }
     };
 
-    const onPublish: SubmitHandler<ArticleFormValues> = async (values) => {
-        await saveArticle(values, "published");
+    const onSubmit: SubmitHandler<ArticleFormValues> = async (values) => {
+        await saveArticle(values);
     };
 
-    const handleDraftSave = async () => {
+    const handleSaveAsDraft = async () => {
         setIsDraftSaving(true);
         setSubmitError("");
 
@@ -249,7 +298,10 @@ const AddArticle: React.FC = () => {
                 content: watch("content") || "",
                 category: watch("category") || "",
                 author: watch("author") || "",
+                status: "draft" as ArticleStatus,
+                updatedAt: watch("updatedAt") || "",
                 featuredImage: watch("featuredImage") || null,
+                featuredImageUrl: watch("featuredImageUrl") || null,
             };
 
             const requestData = new FormData();
@@ -258,23 +310,28 @@ const AddArticle: React.FC = () => {
             requestData.append("category", values.category);
             requestData.append("author", values.author.trim());
             requestData.append("status", "draft");
+            requestData.append("updatedAt", values.updatedAt);
 
             if (values.featuredImage) {
                 requestData.append("featuredImage", values.featuredImage);
             }
 
+            if (!values.featuredImage && values.featuredImageUrl) {
+                requestData.append("featuredImageUrl", values.featuredImageUrl);
+            }
+
             /*
              * این بخش را با API واقعی پروژه جایگزین کن.
              *
-             * await fetch("/api/articles", {
-             *     method: "POST",
+             * await fetch(`/api/articles/${articleId}`, {
+             *     method: "PUT",
              *     body: requestData,
              * });
              */
 
             console.log("Article status:", "draft");
             console.log(
-                "Article data:",
+                "Draft article data:",
                 Object.fromEntries(requestData.entries())
             );
         } catch (error) {
@@ -292,12 +349,12 @@ const AddArticle: React.FC = () => {
         >
             <div className="mb-8 flex flex-col gap-4">
                 <h1 className="flex items-center text-2xl font-VazirBold text-neutral-07">
-                    افزودن مقاله جدید
+                    ویرایش مقاله
                 </h1>
 
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <PageHierarchy
-                        items={["مدیریت و بررسی مقالات", "افزودن مقاله جدید"]}
+                        items={["مدیریت و بررسی مقالات", "ویرایش مقاله"]}
                     />
 
                     <button
@@ -311,7 +368,7 @@ const AddArticle: React.FC = () => {
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit(onPublish)}>
+            <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mx-auto grid max-w-5xl grid-cols-12 items-start gap-8 rounded-md border bg-white p-6 shadow-sm">
                     <div className="col-span-12 space-y-6 lg:col-span-8">
                         <Controller
@@ -323,7 +380,12 @@ const AddArticle: React.FC = () => {
                                         label="عنوان مقاله *"
                                         name={field.name}
                                         value={field.value}
-                                        onChange={field.onChange}
+                                        onChange={(e) => {
+                                            field.onChange(e);
+                                            if (submitError) {
+                                                setSubmitError("");
+                                            }
+                                        }}
                                         placeholder="عنوان مقاله را وارد کنید..."
                                         wrapperClassName="w-full"
                                         inputClassName="w-full rounded-md border px-3 py-5 text-sm"
@@ -340,9 +402,7 @@ const AddArticle: React.FC = () => {
                         <div>
                             <label className="mb-2 block text-xs font-bold text-neutral-07">
                                 محتوای مقاله
-                                <span className="mr-1 font-VazirBold text-sm">
-                                    *
-                                </span>
+                                <span className="mr-1 font-VazirBold text-sm">*</span>
                             </label>
 
                             <div className="article-editor overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm">
@@ -417,13 +477,16 @@ const AddArticle: React.FC = () => {
                                         <div className="flex min-w-0 items-center gap-2">
                                             <ImageIcon className="size-4 shrink-0 text-secondary-color-blue" />
                                             <span className="truncate text-xs text-gray-600">
-                                                {featuredImage?.name}
+                                                {featuredImage?.name ||
+                                                    "تصویر فعلی مقاله"}
                                             </span>
                                         </div>
 
                                         <button
                                             type="button"
-                                            onClick={() => imageInputRef.current?.click()}
+                                            onClick={() =>
+                                                imageInputRef.current?.click()
+                                            }
                                             className="shrink-0 cursor-pointer text-xs font-VazirBold text-secondary-color-blue"
                                         >
                                             تغییر تصویر
@@ -445,7 +508,8 @@ const AddArticle: React.FC = () => {
                                     </span>
 
                                     <span className="font-VazirRegular text-[10px] text-gray-400">
-                                        فرمت‌های مجاز: JPG، PNG، WEBP - حداکثر حجم: ۱۰MB - نسبت پیشنهادی: 16:9
+                                        فرمت‌های مجاز: JPG، PNG، WEBP - حداکثر حجم:
+                                        ۱۰MB - نسبت پیشنهادی: 16:9
                                     </span>
                                 </button>
                             )}
@@ -465,9 +529,7 @@ const AddArticle: React.FC = () => {
                                     <FolderOpen className="size-4 text-secondary-color-blue" />
                                     <span className="text-xs font-VazirBold">
                                         دسته‌بندی
-                                        <span className="mr-1 font-VazirBold text-sm">
-                                            *
-                                        </span>
+                                        <span className="mr-1 font-VazirBold text-sm">*</span>
                                     </span>
                                 </div>
 
@@ -490,11 +552,18 @@ const AddArticle: React.FC = () => {
                                                     <SelectValue placeholder="انتخاب دسته‌بندی" />
                                                 </SelectTrigger>
 
-                                                <SelectContent dir="rtl" className="text-right">
-                                                    <SelectItem value="tech">تکنولوژی</SelectItem>
-                                                    <SelectItem value="design">طراحی</SelectItem>
-                                                    <SelectItem value="business">کسب‌وکار</SelectItem>
-                                                    <SelectItem value="education">آموزش</SelectItem>
+                                                <SelectContent
+                                                    dir="rtl"
+                                                    className="text-right"
+                                                >
+                                                    {categoryOptions.map((item) => (
+                                                        <SelectItem
+                                                            key={item.value}
+                                                            value={item.value}
+                                                        >
+                                                            {item.label}
+                                                        </SelectItem>
+                                                    ))}
                                                 </SelectContent>
                                             </Select>
 
@@ -520,13 +589,87 @@ const AddArticle: React.FC = () => {
                                             }
                                             name={field.name}
                                             value={field.value || ""}
-                                            onChange={field.onChange}
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                if (submitError) {
+                                                    setSubmitError("");
+                                                }
+                                            }}
                                             placeholder="نام نویسنده را وارد کنید..."
                                             wrapperClassName="w-full space-y-2.5"
                                             labelClassName="text-xs font-bold text-gray-800"
                                             inputClassName="w-full rounded-lg border bg-white px-3 py-2.5 text-xs outline-none focus:border-[#9A6B3D]"
                                         />
                                     </div>
+                                )}
+                            />
+
+                            <div className="space-y-2.5">
+                                <div className="flex items-center gap-2 text-gray-800">
+                                    <CheckCircle2 className="size-4 text-secondary-color-blue" />
+                                    <span className="text-xs font-VazirBold">
+                                        وضعیت مقاله
+                                    </span>
+                                </div>
+
+                                <Controller
+                                    name="status"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <>
+                                            <Select
+                                                dir="rtl"
+                                                value={field.value}
+                                                onValueChange={(value) => {
+                                                    field.onChange(value as ArticleStatus);
+                                                    if (submitError) {
+                                                        setSubmitError("");
+                                                    }
+                                                }}
+                                            >
+                                                <SelectTrigger className="h-[38px] w-full border text-xs focus:border-secondary-color-blue focus:ring-0">
+                                                    <SelectValue placeholder="انتخاب وضعیت" />
+                                                </SelectTrigger>
+
+                                                <SelectContent className="text-right">
+                                                    {statusOptions.map((item) => (
+                                                        <SelectItem
+                                                            key={item.value}
+                                                            value={item.value}
+                                                        >
+                                                            {item.label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+
+                                            {errors.status && (
+                                                <p className="mt-2 text-xs text-red-500">
+                                                    {errors.status.message}
+                                                </p>
+                                            )}
+                                        </>
+                                    )}
+                                />
+                            </div>
+
+                            <Controller
+                                name="updatedAt"
+                                control={control}
+                                render={({ field }) => (
+                                    <CustomInput
+                                        label="آخرین بروزرسانی"
+                                        labelIcon={
+                                            <Clock3 className="size-4 text-secondary-color-blue" />
+                                        }
+                                        name={field.name}
+                                        value={field.value || ""}
+                                        onChange={() => { }}
+                                        disabled
+                                        wrapperClassName="w-full space-y-2.5"
+                                        labelClassName="text-xs font-VazirBold text-gray-800"
+                                        inputClassName="w-full rounded-lg border bg-gray-50 px-3 py-2.5 text-xs text-gray-500 outline-none"
+                                    />
                                 )}
                             />
                         </div>
@@ -544,18 +687,16 @@ const AddArticle: React.FC = () => {
                                     disabled={isSubmitting || isDraftSaving}
                                     className="flex cursor-pointer items-center justify-center gap-1.5 rounded-md bg-main px-6 py-3 text-xs font-VazirBold text-white shadow-sm transition-colors hover:bg-main/90 disabled:cursor-not-allowed disabled:opacity-60 whitespace-nowrap"
                                 >
-                                    <Send size={16} />
-                                    {isSubmitting ? "در حال ذخیره..." : "انتشار"}
+                                    <Save size={16} />
+                                    {isSubmitting ? "در حال ذخیره..." : "ذخیره تغییرات"}
                                 </button>
 
                                 <button
                                     type="button"
-                                    disabled={isSubmitting || isDraftSaving}
-                                    onClick={handleDraftSave}
-                                    className="flex cursor-pointer items-center justify-center gap-1.5 rounded-md border bg-white px-4 py-2 text-xs font-VazirBold text-gray-600 transition-colors hover:bg-main hover:text-white disabled:cursor-not-allowed disabled:opacity-60 whitespace-nowrap"
+                                    className="flex cursor-pointer items-center justify-center gap-1.5 rounded-md border bg-white px-4 py-2 text-xs font-VazirBold text-gray-600 transition-colors hover:bg-main hover:text-white whitespace-nowrap"
                                 >
-                                    <FileText size={16} />
-                                    {isDraftSaving ? "در حال ذخیره..." : "ذخیره پیش‌نویس"}
+                                    <Eye size={16} />
+                                    پیش‌نمایش
                                 </button>
                             </div>
                         </div>
@@ -566,7 +707,4 @@ const AddArticle: React.FC = () => {
     );
 };
 
-export default AddArticle;
-
-
-
+export default EditArticle;

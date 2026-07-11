@@ -194,7 +194,7 @@ const ArticleManagement: React.FC = () => {
                                             className="cursor-pointer text-secondary-color-blue hover:text-gray-600"
                                         />
                                         <Edit
-                                            onClick={() => navigate("/p-admin/admin-article/edit")}
+                                            onClick={() => navigate("/p-admin/admin-articles/edit")}
                                             size={18}
                                             className="cursor-pointer text-secondary-color-blue hover:text-gray-600"
                                         />
