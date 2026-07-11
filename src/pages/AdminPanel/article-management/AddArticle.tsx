@@ -1,29 +1,23 @@
-import React, { useMemo, useState } from "react";
+import React, { ChangeEvent, FormEvent, useMemo, useRef, useState } from "react";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+
 import {
-    ChevronDown,
     ChevronLeft,
-    Upload,
-    Bold,
-    Italic,
-    Underline,
-    List,
-    ListOrdered,
-    Image as ImageIcon,
-    Link,
-    AlignRight,
     FileText,
-    Undo2,
-    Redo2,
-    HelpCircle,
-    Settings,
     FolderOpen,
-    User,
+    Image as ImageIcon,
     Send,
+    Upload,
+    User,
+    X,
 } from "lucide-react";
 
 import PageHierarchy from "../../../components/modules/Page-Hierarchy/page-hierarchy";
 import CustomInput from "../../../components/ui/custom-input";
-
 import {
     Select,
     SelectContent,
@@ -32,235 +26,542 @@ import {
     SelectValue,
 } from "../../../components/ui/select";
 
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
+
+const quillModules = {
+    toolbar: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline", "strike"],
+        [{ color: [] }, { background: [] }],
+        [{ align: ["", "center", "right", "justify"] }],
+        [{ list: "ordered" }, { list: "bullet" }],
+        [{ indent: "-1" }, { indent: "+1" }],
+        ["blockquote", "code-block"],
+        ["link"],
+        ["clean"],
+    ],
+    history: {
+        delay: 500,
+        maxStack: 100,
+        userOnly: true,
+    },
+};
+
+const quillFormats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "color",
+    "background",
+    "align",
+    "list",
+    "bullet",
+    "indent",
+    "blockquote",
+    "code-block",
+    "link",
+];
+
+const getPlainText = (html: string) => {
+    return html
+        .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, " ")
+        .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, " ")
+        .replace(/<[^>]+>/g, " ")
+        .replace(/&nbsp;/gi, " ")
+        .replace(/&zwnj;/gi, "‌")
+        .replace(/&amp;/gi, "&")
+        .replace(/\s+/g, " ")
+        .trim();
+};
+
+const articleSchema = z.object({
+    title: z
+        .string()
+        .trim()
+        .min(1, "لطفاً عنوان مقاله را وارد کنید."),
+    content: z
+        .string()
+        .refine(
+            (value) => getPlainText(value).length > 0,
+            "برای انتشار، محتوای مقاله الزامی است."
+        ),
+    category: z
+        .string()
+        .trim()
+        .min(1, "برای انتشار، دسته‌بندی مقاله را انتخاب کنید."),
+    author: z.string().trim().optional(),
+    featuredImage: z
+        .instanceof(File)
+        .nullable()
+        .optional()
+        .refine(
+            (file) => !file || ALLOWED_IMAGE_TYPES.includes(file.type as (typeof ALLOWED_IMAGE_TYPES)[number]),
+            "فرمت تصویر باید JPG، PNG یا WEBP باشد."
+        )
+        .refine(
+            (file) => !file || file.size <= MAX_IMAGE_SIZE,
+            "حجم تصویر نباید بیشتر از ۱۰ مگابایت باشد."
+        ),
+});
+
+type ArticleFormValues = z.infer<typeof articleSchema>;
+type PublishStatus = "published" | "draft";
+
 const AddArticle: React.FC = () => {
-    const [formData, setFormData] = useState({
-        title: "",
-        content: "",
-        category: "",
-        author: "",
+    const imageInputRef = useRef<HTMLInputElement>(null);
+    const [imagePreview, setImagePreview] = useState("");
+    const [submitError, setSubmitError] = useState("");
+    const [isDraftSaving, setIsDraftSaving] = useState(false);
+
+    const {
+        control,
+        handleSubmit,
+        setValue,
+        watch,
+        clearErrors,
+        setError,
+        formState: { errors, isSubmitting },
+    } = useForm<ArticleFormValues>({
+        resolver: zodResolver(articleSchema),
+        defaultValues: {
+            title: "",
+            content: "",
+            category: "",
+            author: "",
+            featuredImage: null,
+        },
+        mode: "onSubmit",
     });
 
+    const contentValue = watch("content");
+    const featuredImage = watch("featuredImage");
+
     const wordCount = useMemo(() => {
-        if (!formData.content.trim()) return 0;
-        return formData.content.trim().split(/\s+/).length;
-    }, [formData.content]);
+        const plainText = getPlainText(contentValue || "");
+        if (!plainText) {
+            return 0;
+        }
+        return plainText.split(/\s+/).length;
+    }, [contentValue]);
 
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    const handleFeaturedImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = event.target.files?.[0];
+
+        if (!selectedFile) {
+            return;
+        }
+
+        if (!ALLOWED_IMAGE_TYPES.includes(selectedFile.type as (typeof ALLOWED_IMAGE_TYPES)[number])) {
+            setError("featuredImage", {
+                type: "manual",
+                message: "فرمت تصویر باید JPG، PNG یا WEBP باشد.",
+            });
+            event.target.value = "";
+            return;
+        }
+
+        if (selectedFile.size > MAX_IMAGE_SIZE) {
+            setError("featuredImage", {
+                type: "manual",
+                message: "حجم تصویر نباید بیشتر از ۱۰ مگابایت باشد.",
+            });
+            event.target.value = "";
+            return;
+        }
+
+        if (imagePreview) {
+            URL.revokeObjectURL(imagePreview);
+        }
+
+        const previewUrl = URL.createObjectURL(selectedFile);
+
+        setImagePreview(previewUrl);
+        setValue("featuredImage", selectedFile, { shouldValidate: true });
+        clearErrors("featuredImage");
+    };
+
+    const handleRemoveFeaturedImage = () => {
+        if (imagePreview) {
+            URL.revokeObjectURL(imagePreview);
+        }
+
+        setImagePreview("");
+        setValue("featuredImage", null, { shouldValidate: true });
+        clearErrors("featuredImage");
+
+        if (imageInputRef.current) {
+            imageInputRef.current.value = "";
+        }
+    };
+
+    const saveArticle = async (
+        values: ArticleFormValues,
+        status: PublishStatus
     ) => {
-        const { name, value } = e.target;
+        try {
+            setSubmitError("");
 
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+            const requestData = new FormData();
+            requestData.append("title", values.title.trim());
+            requestData.append("content", values.content);
+            requestData.append("category", values.category);
+            requestData.append("author", values.author?.trim() || "");
+            requestData.append("status", status);
+
+            if (values.featuredImage) {
+                requestData.append("featuredImage", values.featuredImage);
+            }
+
+            /*
+             * این بخش را با API واقعی پروژه جایگزین کن.
+             *
+             * await fetch("/api/articles", {
+             *     method: "POST",
+             *     body: requestData,
+             * });
+             */
+
+            console.log("Article status:", status);
+            console.log(
+                "Article data:",
+                Object.fromEntries(requestData.entries())
+            );
+        } catch (error) {
+            console.error("Failed to save article:", error);
+            setSubmitError("ذخیره مقاله با خطا مواجه شد. دوباره تلاش کنید.");
+        }
+    };
+
+    const onPublish: SubmitHandler<ArticleFormValues> = async (values) => {
+        await saveArticle(values, "published");
+    };
+
+    const handleDraftSave = async () => {
+        setIsDraftSaving(true);
+        setSubmitError("");
+
+        try {
+            const values = {
+                title: watch("title") || "",
+                content: watch("content") || "",
+                category: watch("category") || "",
+                author: watch("author") || "",
+                featuredImage: watch("featuredImage") || null,
+            };
+
+            const requestData = new FormData();
+            requestData.append("title", values.title.trim());
+            requestData.append("content", values.content);
+            requestData.append("category", values.category);
+            requestData.append("author", values.author.trim());
+            requestData.append("status", "draft");
+
+            if (values.featuredImage) {
+                requestData.append("featuredImage", values.featuredImage);
+            }
+
+            /*
+             * این بخش را با API واقعی پروژه جایگزین کن.
+             *
+             * await fetch("/api/articles", {
+             *     method: "POST",
+             *     body: requestData,
+             * });
+             */
+
+            console.log("Article status:", "draft");
+            console.log(
+                "Article data:",
+                Object.fromEntries(requestData.entries())
+            );
+        } catch (error) {
+            console.error("Failed to save draft:", error);
+            setSubmitError("ذخیره پیش‌نویس با خطا مواجه شد. دوباره تلاش کنید.");
+        } finally {
+            setIsDraftSaving(false);
+        }
     };
 
     return (
         <div
-            className="w-full bg-white rounded-md shadow-lg my-10 p-6 border transition-all hover:drop-shadow-custom"
+            className="my-10 w-full rounded-md border bg-white p-6 shadow-lg transition-all hover:drop-shadow-custom"
             dir="rtl"
         >
-            {/* Header */}
-            <div className="flex flex-col mb-8">
+            <div className="mb-8 flex flex-col gap-4">
                 <h1 className="flex items-center text-2xl font-VazirBold text-neutral-07">
                     افزودن مقاله جدید
                 </h1>
 
-                <div className="flex items-center">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <PageHierarchy
                         items={["مدیریت و بررسی مقالات", "افزودن مقاله جدید"]}
                     />
 
-                    <button className="flex items-center gap-2 px-6 py-2 bg-white border border-main rounded-md text-gray-700 hover:bg-main hover:text-white transition-all shadow-sm cursor-pointer">
+                    <button
+                        type="button"
+                        onClick={() => window.history.back()}
+                        className="flex w-fit cursor-pointer items-center gap-2 rounded-md border border-main bg-white px-6 py-2 text-gray-700 shadow-sm transition-all hover:bg-main hover:text-white"
+                    >
                         <ChevronLeft size={16} />
                         بازگشت
                     </button>
                 </div>
             </div>
 
-            {/* Main Grid */}
-            <div className="grid grid-cols-12 gap-8 items-start bg-white rounded-2xl p-6 shadow-sm border max-w-5xl mx-auto">
-                {/* RIGHT COLUMN */}
-                <div className="col-span-12 lg:col-span-8 space-y-6">
-                    {/* Article Title */}
-                    <CustomInput
-                        label="عنوان مقاله *"
-                        name="title"
-                        value={formData.title}
-                        onChange={handleChange}
-                        placeholder="عنوان مقاله را وارد کنید..."
-                        wrapperClassName="w-full"
-                        inputClassName="w-full px-3 py-5 border rounded-xl text-sm"
-                    />
-
-                    {/* Editor */}
-                    <div>
-                        <label className="block text-xs font-bold text-neutral-07 mb-2">
-                            محتوای مقاله <span className="text-red-500">*</span>
-                        </label>
-
-                        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                            {/* Toolbar */}
-                            <div className="flex flex-wrap items-center justify-between p-2.5 bg-gray-50 border-b border-gray-150">
-                                <div className="flex flex-wrap items-center gap-1.5">
-                                    <button className="p-1.5 hover:bg-gray-100 rounded text-gray-600">
-                                        <Underline className="w-4 h-4" />
-                                    </button>
-                                    <button className="p-1.5 hover:bg-gray-100 rounded text-gray-600">
-                                        <Italic className="w-4 h-4" />
-                                    </button>
-                                    <button className="p-1.5 hover:bg-gray-100 rounded text-gray-600">
-                                        <Bold className="w-4 h-4" />
-                                    </button>
-
-                                    <div className="w-px h-4 bg-gray-300 mx-1"></div>
-
-                                    <button className="p-1.5 hover:bg-gray-100 rounded text-gray-600">
-                                        <HelpCircle className="w-4 h-4" />
-                                    </button>
-                                    <button className="p-1.5 hover:bg-gray-100 rounded text-gray-600">
-                                        <ImageIcon className="w-4 h-4" />
-                                    </button>
-                                    <button className="p-1.5 hover:bg-gray-100 rounded text-gray-600">
-                                        <Link className="w-4 h-4" />
-                                    </button>
-                                    <button className="p-1.5 hover:bg-gray-100 rounded text-gray-600">
-                                        <Settings className="w-4 h-4" />
-                                    </button>
-
-                                    <div className="w-px h-4 bg-gray-300 mx-1"></div>
-
-                                    <button className="p-1.5 hover:bg-gray-100 rounded text-gray-600">
-                                        <ListOrdered className="w-4 h-4" />
-                                    </button>
-                                    <button className="p-1.5 hover:bg-gray-100 rounded text-gray-600">
-                                        <List className="w-4 h-4" />
-                                    </button>
-                                    <button className="p-1.5 hover:bg-gray-100 rounded text-gray-600">
-                                        <AlignRight className="w-4 h-4" />
-                                    </button>
-
-                                    <div className="w-px h-4 bg-gray-300 mx-1"></div>
-
-                                    <div className="flex items-center gap-1.5 text-xs text-gray-600 bg-white border border-gray-200 px-2.5 py-1 rounded-md cursor-pointer hover:bg-gray-50">
-                                        <span>Normal</span>
-                                        <ChevronDown className="w-3 h-3 text-gray-400" />
-                                    </div>
+            <form onSubmit={handleSubmit(onPublish)}>
+                <div className="mx-auto grid max-w-5xl grid-cols-12 items-start gap-8 rounded-md border bg-white p-6 shadow-sm">
+                    <div className="col-span-12 space-y-6 lg:col-span-8">
+                        <Controller
+                            name="title"
+                            control={control}
+                            render={({ field }) => (
+                                <div>
+                                    <CustomInput
+                                        label="عنوان مقاله *"
+                                        name={field.name}
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        placeholder="عنوان مقاله را وارد کنید..."
+                                        wrapperClassName="w-full"
+                                        inputClassName="w-full rounded-md border px-3 py-5 text-sm"
+                                    />
+                                    {errors.title && (
+                                        <p className="mt-2 text-xs text-red-500">
+                                            {errors.title.message}
+                                        </p>
+                                    )}
                                 </div>
+                            )}
+                        />
 
-                                <div className="flex items-center gap-1.5">
-                                    <button className="p-1.5 hover:bg-gray-100 rounded text-gray-400">
-                                        <Undo2 className="w-4 h-4" />
-                                    </button>
-                                    <button className="p-1.5 hover:bg-gray-100 rounded text-gray-400">
-                                        <Redo2 className="w-4 h-4" />
-                                    </button>
+                        <div>
+                            <label className="mb-2 block text-xs font-bold text-neutral-07">
+                                محتوای مقاله
+                                <span className="mr-1 font-VazirBold text-sm">
+                                    *
+                                </span>
+                            </label>
+
+                            <div className="article-editor overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm">
+                                <Controller
+                                    name="content"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <ReactQuill
+                                            theme="snow"
+                                            value={field.value}
+                                            onChange={(value) => {
+                                                field.onChange(value);
+                                                if (submitError) {
+                                                    setSubmitError("");
+                                                }
+                                            }}
+                                            modules={quillModules}
+                                            formats={quillFormats}
+                                            placeholder="متن مقاله را بنویسید..."
+                                            className="text-sm text-gray-700"
+                                        />
+                                    )}
+                                />
+
+                                <div className="border-t border-gray-100 bg-gray-50 px-4 py-2 text-left text-[10px] text-gray-400">
+                                    تعداد کلمات: {wordCount}
                                 </div>
                             </div>
 
-                            {/* Textarea */}
-                            <textarea
-                                name="content"
-                                value={formData.content}
-                                onChange={handleChange}
-                                placeholder="متن مقاله را بنویسید..."
-                                className="w-full h-40 p-4 bg-transparent outline-none resize-none text-sm text-gray-700 leading-7 placeholder-gray-300"
+                            {errors.content && (
+                                <p className="mt-2 text-xs text-red-500">
+                                    {errors.content.message}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="block text-xs font-bold text-neutral-07">
+                                تصویر شاخص
+                            </label>
+
+                            <p className="font-VazirRegular text-[10px] text-gray-400">
+                                تصویری که به‌عنوان نمای اصلی مقاله نمایش داده می‌شود.
+                            </p>
+
+                            <input
+                                ref={imageInputRef}
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp"
+                                onChange={handleFeaturedImageChange}
+                                className="hidden"
                             />
 
-                            {/* Word Count */}
-                            <div className="px-4 py-2 border-t border-gray-100 bg-gray-50 text-[10px] text-gray-400 text-left">
-                                تعداد کلمات: {wordCount}
-                            </div>
+                            {imagePreview ? (
+                                <div className="relative overflow-hidden rounded-md border border-gray-200 bg-gray-50">
+                                    <img
+                                        src={imagePreview}
+                                        alt="پیش‌نمایش تصویر شاخص"
+                                        className="aspect-video w-full object-cover"
+                                    />
+
+                                    <button
+                                        type="button"
+                                        onClick={handleRemoveFeaturedImage}
+                                        aria-label="حذف تصویر شاخص"
+                                        className="absolute left-3 top-3 flex size-8 cursor-pointer items-center justify-center rounded-full bg-white/90 text-red-500 shadow-md transition-colors hover:bg-red-500 hover:text-white"
+                                    >
+                                        <X size={17} />
+                                    </button>
+
+                                    <div className="flex items-center justify-between gap-3 bg-white px-4 py-3">
+                                        <div className="flex min-w-0 items-center gap-2">
+                                            <ImageIcon className="size-4 shrink-0 text-secondary-color-blue" />
+                                            <span className="truncate text-xs text-gray-600">
+                                                {featuredImage?.name}
+                                            </span>
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => imageInputRef.current?.click()}
+                                            className="shrink-0 cursor-pointer text-xs font-VazirBold text-secondary-color-blue"
+                                        >
+                                            تغییر تصویر
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => imageInputRef.current?.click()}
+                                    className="group flex w-full cursor-pointer flex-col items-center justify-center rounded-md border bg-white p-8 text-center transition-colors hover:border-secondary-color-blue"
+                                >
+                                    <span className="mb-4 flex size-12 items-center justify-center rounded-full bg-neutral-01 text-secondary-color-blue transition-transform group-hover:scale-105">
+                                        <Upload className="size-5" />
+                                    </span>
+
+                                    <span className="mb-2 text-xs font-bold text-gray-800">
+                                        برای انتخاب تصویر کلیک کنید
+                                    </span>
+
+                                    <span className="font-VazirRegular text-[10px] text-gray-400">
+                                        فرمت‌های مجاز: JPG، PNG، WEBP - حداکثر حجم: ۱۰MB - نسبت پیشنهادی: 16:9
+                                    </span>
+                                </button>
+                            )}
+
+                            {errors.featuredImage && (
+                                <p className="text-xs text-red-500">
+                                    {errors.featuredImage.message}
+                                </p>
+                            )}
                         </div>
                     </div>
 
-                    {/* Featured Image */}
-                    <div className="space-y-2">
-                        <label className="block text-xs font-bold text-neutral-07">
-                            تصویر شاخص
-                        </label>
-                        <p className="text-[10px] text-gray-400">
-                            تصویری که به عنوان نمای اصلی مقاله نمایش داده می‌شود.
-                        </p>
+                    <div className="col-span-12 flex min-h-[500px] h-full flex-col justify-between space-y-6 rounded-md border border-gray-200 bg-white p-5 shadow-sm lg:col-span-4">
+                        <div className="space-y-10">
+                            <div className="space-y-2.5">
+                                <div className="flex items-center gap-2 text-gray-800">
+                                    <FolderOpen className="size-4 text-secondary-color-blue" />
+                                    <span className="text-xs font-VazirBold">
+                                        دسته‌بندی
+                                        <span className="mr-1 font-VazirBold text-sm">
+                                            *
+                                        </span>
+                                    </span>
+                                </div>
 
-                        <div className="bg-white border rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:border-secondary-color-blue transition-colors group">
-                            <div className="w-12 h-12 bg-neutral-01 rounded-full flex items-center justify-center text-secondary-color-blue mb-4 group-hover:scale-105 transition-transform">
-                                <Upload className="size-5" />
+                                <Controller
+                                    name="category"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <>
+                                            <Select
+                                                dir="rtl"
+                                                value={field.value}
+                                                onValueChange={(value) => {
+                                                    field.onChange(value);
+                                                    if (submitError) {
+                                                        setSubmitError("");
+                                                    }
+                                                }}
+                                            >
+                                                <SelectTrigger className="h-[38px] w-full border text-xs focus:border-secondary-color-blue focus:ring-0">
+                                                    <SelectValue placeholder="انتخاب دسته‌بندی" />
+                                                </SelectTrigger>
+
+                                                <SelectContent dir="rtl" className="text-right">
+                                                    <SelectItem value="tech">تکنولوژی</SelectItem>
+                                                    <SelectItem value="design">طراحی</SelectItem>
+                                                    <SelectItem value="business">کسب‌وکار</SelectItem>
+                                                    <SelectItem value="education">آموزش</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+
+                                            {errors.category && (
+                                                <p className="mt-2 text-xs text-red-500">
+                                                    {errors.category.message}
+                                                </p>
+                                            )}
+                                        </>
+                                    )}
+                                />
                             </div>
-                            <p className="text-xs font-bold text-gray-800 mb-2">
-                                برای آپلود تصویر کلیک کنید یا تصویر را بکشید و رها کنید
-                            </p>
-                            <p className="text-[10px] text-gray-400">
-                                فرمت‌های مجاز: JPG, PNG - حداکثر اندازه: 10MB - نسبت پیشنهادی: 16:9
-                            </p>
+
+                            <Controller
+                                name="author"
+                                control={control}
+                                render={({ field }) => (
+                                    <div>
+                                        <CustomInput
+                                            label="نویسنده"
+                                            labelIcon={
+                                                <User className="size-4 text-secondary-color-blue" />
+                                            }
+                                            name={field.name}
+                                            value={field.value || ""}
+                                            onChange={field.onChange}
+                                            placeholder="نام نویسنده را وارد کنید..."
+                                            wrapperClassName="w-full space-y-2.5"
+                                            labelClassName="text-xs font-bold text-gray-800"
+                                            inputClassName="w-full rounded-lg border bg-white px-3 py-2.5 text-xs outline-none focus:border-[#9A6B3D]"
+                                        />
+                                    </div>
+                                )}
+                            />
+                        </div>
+
+                        <div className="space-y-4 border-t border-gray-100 pt-6">
+                            {submitError && (
+                                <div className="rounded-md border border-red-100 bg-red-50 px-3 py-2 text-xs leading-6 text-red-600">
+                                    {submitError}
+                                </div>
+                            )}
+
+                            <div className="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row xl:justify-center">
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting || isDraftSaving}
+                                    className="flex cursor-pointer items-center justify-center gap-1.5 rounded-md bg-main px-6 py-3 text-xs font-VazirBold text-white shadow-sm transition-colors hover:bg-main/90 disabled:cursor-not-allowed disabled:opacity-60 whitespace-nowrap"
+                                >
+                                    <Send size={16} />
+                                    {isSubmitting ? "در حال ذخیره..." : "انتشار"}
+                                </button>
+
+                                <button
+                                    type="button"
+                                    disabled={isSubmitting || isDraftSaving}
+                                    onClick={handleDraftSave}
+                                    className="flex cursor-pointer items-center justify-center gap-1.5 rounded-md border bg-white px-4 py-2 text-xs font-VazirBold text-gray-600 transition-colors hover:bg-main hover:text-white disabled:cursor-not-allowed disabled:opacity-60 whitespace-nowrap"
+                                >
+                                    <FileText size={16} />
+                                    {isDraftSaving ? "در حال ذخیره..." : "ذخیره پیش‌نویس"}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                {/* LEFT SIDEBAR */}
-                <div className="col-span-12 lg:col-span-4 h-full bg-white border border-gray-200 rounded-2xl p-5 space-y-6 flex flex-col justify-between shadow-sm min-h-[500px]">
-                    <div className="space-y-6">
-
-                        {/* Category */}
-                        <div className="space-y-2.5">
-                            <div className="flex items-center gap-2 text-gray-800">
-                                <FolderOpen className="size-4 text-secondary-color-blue" />
-                                <span className="text-xs font-VazirBold">
-                                    دسته‌بندی
-                                </span>
-                            </div>
-
-                            <Select
-                                dir='rtl'
-                                value={formData.category}
-                                onValueChange={(value) =>
-                                    setFormData((prev) => ({
-                                        ...prev,
-                                        category: value,
-                                    }))
-                                }
-                            >
-                                <SelectTrigger className="w-full h-[38px] text-xs border focus:ring-0 focus:border-secondary-color-blue">
-                                    <SelectValue placeholder="انتخاب دسته‌بندی" />
-                                </SelectTrigger>
-
-                                <SelectContent className="text-right">
-                                    <SelectItem value="tech">تکنولوژی</SelectItem>
-                                    <SelectItem value="design">طراحی</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        {/* Author */}
-                        <CustomInput
-                            label="نویسنده"
-                            labelIcon={<User className="size-4 text-secondary-color-blue" />}
-                            name="author"
-                            value={formData.author}
-                            onChange={handleChange}
-                            placeholder="نام نویسنده را وارد کنید..."
-                            wrapperClassName="w-full space-y-2.5"
-                            labelClassName="text-xs font-bold text-gray-800"
-                            inputClassName="w-full px-3 py-2.5 bg-white border border rounded-lg text-xs outline-none focus:border-[#9A6B3D]"
-                        />
-                    </div>
-
-                    {/* Actions */}
-                    <div className="pt-6 border-t border-gray-100 flex justify-between">
-
-                        <button className="px-6 py-3 bg-main hover:bg-main/90 text-white rounded-md text-xs font-VazirBold transition-colors flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
-                            <Send size={16} />
-                            انتشار
-                        </button>
-
-                        <button className="px-4 py-2 bg-white border text-gray-600 rounded-md text-xs font-VazirBold transition-colors hover:bg-main hover:text-white flex items-center justify-center gap-1.5 cursor-pointer">
-                            <FileText size={16} />
-                            پیش‌نویس
-                        </button>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
     );
 };
