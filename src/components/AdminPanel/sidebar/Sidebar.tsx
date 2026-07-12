@@ -47,7 +47,7 @@ const items: SidebarItem[] = [
     {
         id: "tickets",
         label: "تیکت ها",
-        to: "/my-account/tickets",
+        to: "/p-admin/admin-tickets",
         icon: TicketCheck,
     },
     {
