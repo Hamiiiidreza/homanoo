@@ -29,6 +29,7 @@ import UserManagement from "./pages/AdminPanel/user-management/user-management";
 import ArticleManagement from "./pages/AdminPanel/article-management/article-management";
 import AddArticle from "./pages/AdminPanel/article-management/AddArticle";
 import EditArticle from "./pages/AdminPanel/article-management/EditArticle";
+import TicketManagement from "./pages/AdminPanel/ticket-management/ticket-management";
 
 const routes = [
     { path: '/', element: <Home /> },
@@ -77,6 +78,7 @@ const routes = [
                     { path: "edit", element: <EditArticle /> },
                 ]
             },
+            { path: "admin-tickets", element: <TicketManagement /> }
         ]
     },
 ]
