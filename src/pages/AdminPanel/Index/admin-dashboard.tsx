@@ -1,71 +1,28 @@
 import React from 'react'
 import {
-    Truck,
-    User,
-    Handbag,
-    TrendingUp,
-    MoveUpRight,
-    ChevronLeft,
-    LucideIcon
+    Truck, User, Handbag, TrendingUp, MoveUpRight, ChevronLeft, LucideIcon
 } from 'lucide-react';
-
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "../../../components/ui/select";
-
 import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid,
-    Tooltip, ResponsiveContainer,
-    TooltipProps
+    Tooltip, ResponsiveContainer, TooltipProps
 } from 'recharts';
-
 import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
 
-
-type GrowthData = {
-    name: string
-    a: number
-    b: number
-}
-
-type SalesData = {
-    name: string
-    sales: number
-}
-
-type StatItem = {
-    title: string
-    count: number
-    icon: LucideIcon
-    desc: string
-}
-
-type TransactionStatus =
-    | 'تکمیل شده'
-    | 'در حال پردازش'
-    | 'در انتظار پرداخت'
-
+type GrowthData = { name: string; a: number; b: number }
+type SalesData = { name: string; sales: number }
+type StatItem = { title: string; count: number; icon: LucideIcon; desc: string }
+type TransactionStatus = 'تکمیل شده' | 'در حال پردازش' | 'در انتظار پرداخت'
 type Transaction = {
-    id: string
-    customer: string
-    product: string
-    price: string
-    status: TransactionStatus
-    date: string
-    img: string
+    id: string; customer: string; product: string;
+    price: string; status: TransactionStatus; date: string; img: string
 }
-
 
 const colors = {
-    primary: "#2d397e",
-    secondary: "#141718",
-    accent: "#2F6BFF",
-    grid: "#F7F9FD",
-    text: "#6c7275"
+    primary: "#2d397e", secondary: "#141718",
+    accent: "#2F6BFF", grid: "#F7F9FD", text: "#6c7275"
 };
 
 const growthData: GrowthData[] = [
@@ -89,49 +46,48 @@ const salesData: SalesData[] = [
 
 const formatYAxis = (value: number): string => {
     if (value === 0) return '۰';
-    const val = Math.round(value / 1000000);
-    return `${val.toLocaleString('fa-ir')}M`;
+    return `${Math.round(value / 1000000).toLocaleString('fa-ir')}M`;
 };
 
 const CustomTooltipSales = ({ active, payload }: TooltipProps<ValueType, NameType> & { payload?: any }) => {
-    if (active && payload && payload.length) {
-        return (
-            <div className="bg-white p-3 border shadow-md rounded-md text-center">
-                <p className="text-[10px] text-neutral-04 mb-1 font-VazirRegular">{payload[0].payload.name}</p>
-                <p className="text-sm font-bold text-neutral-07 font-VazirBold">
-                    {Number(payload[0].value).toLocaleString('fa-ir')} <span className="text-[10px] font-VazirMedium">تومان</span>
-                </p>
-            </div>
-        );
-    }
-    return null;
+    if (!active || !payload?.length) return null;
+    return (
+        <div className="bg-white p-3 border shadow-md rounded-md text-center">
+            <p className="text-[10px] text-neutral-04 mb-1 font-VazirRegular">{payload[0].payload.name}</p>
+            <p className="text-sm font-bold text-neutral-07 font-VazirBold">
+                {Number(payload[0].value).toLocaleString('fa-ir')} <span className="text-[10px] font-VazirMedium">تومان</span>
+            </p>
+        </div>
+    );
 };
 
 const CustomTooltipGrowth = ({ active, payload }: TooltipProps<ValueType, NameType> & { payload?: any }) => {
-    if (active && payload && payload.length) {
-        const data = payload[0].payload as GrowthData
-
-        return (
-            <div className="bg-white p-3 border shadow-md rounded-md text-center font-VazirRegular">
-                <p className="text-[10px] text-neutral-04 mb-1">{data.name}</p>
-                <div className="text-sm font-VazirBold text-neutral-07 space-y-1">
-                    <p className="flex justify-between gap-4">
-                        <span className='text-secondary-color-blue'>گروه الف:</span>
-                        <span>{data.a.toLocaleString('fa-ir')}</span>
-                    </p>
-                    <p className="flex justify-between gap-4">
-                        <span className='text-neutral-07'>گروه ب:</span>
-                        <span>{data.b.toLocaleString('fa-ir')}</span>
-                    </p>
-                </div>
+    if (!active || !payload?.length) return null;
+    const data = payload[0].payload as GrowthData;
+    return (
+        <div className="bg-white p-3 border shadow-md rounded-md text-center font-VazirRegular">
+            <p className="text-[10px] text-neutral-04 mb-1">{data.name}</p>
+            <div className="text-sm font-VazirBold text-neutral-07 space-y-1">
+                <p className="flex justify-between gap-4">
+                    <span className='text-secondary-color-blue'>گروه الف:</span>
+                    <span>{data.a.toLocaleString('fa-ir')}</span>
+                </p>
+                <p className="flex justify-between gap-4">
+                    <span className='text-neutral-07'>گروه ب:</span>
+                    <span>{data.b.toLocaleString('fa-ir')}</span>
+                </p>
             </div>
-        );
-    }
-    return null;
+        </div>
+    );
+};
+
+const statusStyles: Record<TransactionStatus, string> = {
+    'تکمیل شده': 'bg-emerald-50 text-emerald-600',
+    'در حال پردازش': 'bg-blue-50 text-blue-600',
+    'در انتظار پرداخت': 'bg-rose-50 text-rose-600',
 };
 
 const AdminDashboard: React.FC = () => {
-
     const items: StatItem[] = [
         { title: "محصولات فعال", count: 246, icon: Truck, desc: "5% نسبت به ماه قبل" },
         { title: "مشتریان جدید", count: 92, icon: User, desc: "15% نسبت به ماه قبل" },
@@ -147,24 +103,21 @@ const AdminDashboard: React.FC = () => {
     ];
 
     return (
-        <div className="p-6 bg-white min-h-screen font-VazirRegular" dir="rtl">
+        <div className="p-3 sm:p-6 bg-white min-h-screen font-VazirRegular" dir="rtl">
+
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-10 mt-5 w-full">
+            <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-5 mb-6 sm:mb-10 mt-3 sm:mt-5">
                 {items.map((box, i) => {
                     const Icon = box.icon;
-
                     return (
-                        <div
-                            key={i}
-                            className="bg-white border rounded-md p-5 flex items-start gap-4 shadow-sm transition-all hover:drop-shadow-custom"
-                        >
-                            <div className="size-12 flex items-center justify-center rounded-full bg-neutral-01 text-secondary-color-blue">
-                                <Icon size={22} />
+                        <div key={i} className="bg-white border rounded-md p-3 sm:p-5 flex items-start gap-3 sm:gap-4 shadow-sm transition-all hover:drop-shadow-custom">
+                            <div className="size-10 sm:size-12 shrink-0 flex items-center justify-center rounded-full bg-neutral-01 text-secondary-color-blue">
+                                <Icon size={20} />
                             </div>
-                            <div className="flex flex-col gap-1">
-                                <span className="text-neutral-07 text-xs font-VazirMedium">{box.title}</span>
-                                <span className="text-neutral-07 text-base font-VazirBold">{box.count.toLocaleString('fa-ir')}</span>
-                                <span className="flex items-center gap-1 text-secondary-color-green text-[10px] font-VazirRegular mt-1">
+                            <div className="flex flex-col gap-1 min-w-0">
+                                <span className="text-neutral-07 text-[10px] sm:text-xs font-VazirMedium truncate">{box.title}</span>
+                                <span className="text-neutral-07 text-sm sm:text-base font-VazirBold">{box.count.toLocaleString('fa-ir')}</span>
+                                <span className="hidden sm:flex items-center gap-1 text-secondary-color-green text-[10px] font-VazirRegular mt-1">
                                     <MoveUpRight size={10} />
                                     {box.desc}
                                 </span>
@@ -175,24 +128,23 @@ const AdminDashboard: React.FC = () => {
             </div>
 
             {/* Charts Section */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-10">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-10">
                 {/* Growth Chart */}
-                <div className="bg-white p-6 rounded-md border shadow-sm transition-all hover:drop-shadow-custom">
-                    <div className="flex justify-between items-center mb-8">
-                        <h3 className="text-base font-VazirBold text-neutral-07">تحلیل رشد ماهانه</h3>
-                        <div className="flex gap-4">
-                            <div className="flex items-center gap-2">
-                                <div className="size-3 rounded-full bg-secondary-color-blue"></div>
-                                <span className="text-xs text-secondary-color-blue">گروه الف</span>
+                <div className="order-2 xl:order-1 bg-white p-4 sm:p-6 rounded-md border shadow-sm transition-all hover:drop-shadow-custom">
+                    <div className="flex justify-between items-center mb-4 sm:mb-8 gap-2">
+                        <h3 className="text-sm sm:text-base font-VazirBold text-neutral-07 shrink-0">تحلیل رشد ماهانه</h3>
+                        <div className="flex gap-3 sm:gap-4">
+                            <div className="flex items-center gap-1.5">
+                                <div className="size-2.5 rounded-full bg-secondary-color-blue shrink-0"></div>
+                                <span className="text-[10px] sm:text-xs text-secondary-color-blue">گروه الف</span>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-neutral-07"></div>
-                                <span className="text-xs text-gray-500">گروه ب</span>
+                            <div className="flex items-center gap-1.5">
+                                <div className="size-2.5 rounded-full bg-neutral-07 shrink-0"></div>
+                                <span className="text-[10px] sm:text-xs text-gray-500">گروه ب</span>
                             </div>
                         </div>
                     </div>
-
-                    <div className="h-[300px] w-full">
+                    <div className="h-[220px] sm:h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={growthData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                                 <defs>
@@ -205,53 +157,23 @@ const AdminDashboard: React.FC = () => {
                                         <stop offset="95%" stopColor={colors.secondary} stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid
-                                    strokeDasharray="3 3"
-                                    stroke="#e0e0e0"
-                                    vertical={true}
-                                    horizontal={true}
-                                />
-                                <XAxis
-                                    dataKey="name"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: colors.text, fontSize: 10 }}
-                                    dy={10}
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: colors.text, fontSize: 10 }}
-                                />
+                                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: colors.text, fontSize: 9 }} dy={10} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fill: colors.text, fontSize: 9 }} />
                                 <Tooltip content={<CustomTooltipGrowth />} />
-                                <Area
-                                    type="monotone"
-                                    dataKey="a"
-                                    stroke={colors.accent}
-                                    strokeWidth={2}
-                                    fillOpacity={1}
-                                    fill="url(#colorA)"
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="b"
-                                    stroke={colors.secondary}
-                                    strokeWidth={2}
-                                    fillOpacity={1}
-                                    fill="url(#colorB)"
-                                />
+                                <Area type="monotone" dataKey="a" stroke={colors.accent} strokeWidth={2} fillOpacity={1} fill="url(#colorA)" />
+                                <Area type="monotone" dataKey="b" stroke={colors.secondary} strokeWidth={2} fillOpacity={1} fill="url(#colorB)" />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
                 {/* Sales Chart */}
-                <div className="bg-white p-6 rounded-md border shadow-sm transition-all hover:drop-shadow-custom">
-                    <div className="flex justify-between items-center mb-8">
-                        <h3 className="text-base font-VazirBold text-neutral-07">نمودار میزان فروش</h3>
-
+                <div className="order-1 xl:order-2 bg-white p-4 sm:p-6 rounded-md border shadow-sm transition-all hover:drop-shadow-custom">
+                    <div className="flex justify-between items-center mb-4 sm:mb-8 gap-2">
+                        <h3 className="text-sm sm:text-base font-VazirBold text-neutral-07 shrink-0">نمودار میزان فروش</h3>
                         <Select defaultValue="30">
-                            <SelectTrigger className="w-[120px] h-[30px] border-main text-[11px] font-VazirBold text-neutral-04 hover:bg-main hover:text-white transition-all rounded-md px-3 cursor-pointer">
+                            <SelectTrigger className="w-[110px] sm:w-[120px] h-[30px] border-main text-[11px] font-VazirBold text-neutral-04 hover:bg-main hover:text-white transition-all rounded-md px-3 cursor-pointer">
                                 <SelectValue placeholder="انتخاب کنید" />
                             </SelectTrigger>
                             <SelectContent>
@@ -259,10 +181,8 @@ const AdminDashboard: React.FC = () => {
                                 <SelectItem value="90">۹۰ روز اخیر</SelectItem>
                             </SelectContent>
                         </Select>
-
                     </div>
-
-                    <div className="h-[300px] w-full">
+                    <div className="h-[220px] sm:h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={salesData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                                 <defs>
@@ -271,97 +191,92 @@ const AdminDashboard: React.FC = () => {
                                         <stop offset="95%" stopColor={colors.primary} stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid
-                                    strokeDasharray="3 3"
-                                    stroke="#e0e0e0"
-                                    vertical={true}
-                                    horizontal={true}
-                                />
-                                <XAxis
-                                    dataKey="name"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: colors.text, fontSize: 10 }}
-                                    dy={10}
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: colors.text, fontSize: 10 }}
-                                    tickFormatter={formatYAxis}
-                                />
-                                <Tooltip
-                                    content={<CustomTooltipSales />}
-                                    cursor={{ stroke: colors.primary, strokeWidth: 1, strokeDasharray: '5 5' }}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="sales"
-                                    stroke={colors.primary}
-                                    strokeWidth={2.5}
-                                    fillOpacity={1}
-                                    fill="url(#colorSales)"
-                                    activeDot={{ r: 6, fill: colors.primary, stroke: '#fff', strokeWidth: 2 }}
-                                />
+                                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: colors.text, fontSize: 9 }} dy={10} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fill: colors.text, fontSize: 9 }} tickFormatter={formatYAxis} />
+                                <Tooltip content={<CustomTooltipSales />} cursor={{ stroke: colors.primary, strokeWidth: 1, strokeDasharray: '5 5' }} />
+                                <Area type="monotone" dataKey="sales" stroke={colors.primary} strokeWidth={2.5} fillOpacity={1} fill="url(#colorSales)" activeDot={{ r: 6, fill: colors.primary, stroke: '#fff', strokeWidth: 2 }} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
             </div>
 
-            {/* Transactions Table */}
+            {/* Transactions */}
             <div className="bg-white rounded-md shadow-sm border overflow-hidden transition-all hover:drop-shadow-custom">
-                <div className="p-6 flex justify-between items-center border-b border-gray-50">
-                    <h3 className="text-base font-VazirBold text-neutral-07">آخرین تراکنش‌ها</h3>
-                    <h4 className="flex items-center gap-2 text-xs font-VazirMedium text-secondary-color-blue cursor-pointer">
+                <div className="p-4 sm:p-6 flex justify-between items-center border-b border-gray-50">
+                    <h3 className="text-sm sm:text-base font-VazirBold text-neutral-07">آخرین تراکنش‌ها</h3>
+                    <h4 className="flex items-center gap-1.5 text-xs font-VazirMedium text-secondary-color-blue cursor-pointer shrink-0">
                         مشاهده همه
                         <ChevronLeft size={14} />
                     </h4>
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-center border rounded-md overflow-hidden">
+
+                {/* Mobile Cards */}
+                <div className="flex flex-col divide-y divide-gray-100 sm:hidden">
+                    {transactions.map((item, idx) => (
+                        <div key={idx} className="p-4 flex flex-col gap-3">
+                            {/* Row 1: تصویر + اسم محصول + شناسه */}
+                            <div className="flex items-center gap-3">
+                                <img src={item.img} className="size-10 rounded-md object-cover shrink-0" alt={item.product} />
+                                <div className="min-w-0">
+                                    <p className="text-xs text-neutral-04 font-VazirMedium truncate">{item.product}</p>
+                                    <p className="text-[11px] text-gray-400 font-VazirMedium">#{item.id}</p>
+                                </div>
+                            </div>
+
+                            {/* Row 2: اسم مشتری */}
+                            <p className="text-sm font-VazirBold text-neutral-07">{item.customer}</p>
+
+                            {/* Row 3: قیمت */}
+                            <p className="text-sm font-VazirBold text-neutral-07">
+                                {item.price} <span className="text-[10px] font-VazirRegular text-neutral-04">تومان</span>
+                            </p>
+
+                            {/* Row 4: تاریخ + استاتوس */}
+                            <div className="flex items-center justify-between">
+                                <span className="text-[11px] text-gray-400 font-VazirMedium">{item.date}</span>
+                                <span className={`px-2.5 py-1 rounded-full text-[10px] font-VazirBold ${statusStyles[item.status]}`}>
+                                    {item.status}
+                                </span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Tablet+ Table */}
+                <div className="hidden sm:block overflow-x-auto">
+                    <table className="w-full text-center min-w-[600px]">
                         <thead>
                             <tr className="bg-gray-50 text-neutral-07 font-VazirMedium text-xs border-b border-gray-100">
-                                <th className="py-4">شماره سفارش</th>
-                                <th className="py-4">مشتری</th>
-                                <th className="py-4">محصول</th>
-                                <th className="py-4">مبلغ</th>
-                                <th className="py-4">وضعیت</th>
-                                <th className="py-4">تاریخ</th>
+                                <th className="py-3 px-3 whitespace-nowrap">شماره سفارش</th>
+                                <th className="py-3 px-3 whitespace-nowrap">مشتری</th>
+                                <th className="py-3 px-3 whitespace-nowrap">محصول</th>
+                                <th className="py-3 px-3 whitespace-nowrap">مبلغ</th>
+                                <th className="py-3 px-3 whitespace-nowrap">وضعیت</th>
+                                <th className="py-3 px-3 whitespace-nowrap">تاریخ</th>
                             </tr>
                         </thead>
                         <tbody>
                             {transactions.map((item, idx) => (
-                                <tr
-                                    key={idx}
-                                    className="border rounded-md shadow-sm overflow-hidden mt-1 border-gray-50 hover:bg-gray-50 transition-colors"
-                                >
-                                    <td className="px-6 py-4 text-xs font-VazirMedium">{item.id}</td>
-                                    <td className="px-6 py-4 text-sm font-VazirBold text-neutral-07">{item.customer}</td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3">
-                                            <img src={item.img} className="size-10 rounded-md object-cover" alt={item.product} />
-                                            <span className="text-xs text-neutral-04 font-VazirMedium">{item.product}</span>
+                                <tr key={idx} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                    <td className="px-3 py-3 text-xs font-VazirMedium whitespace-nowrap">{item.id}</td>
+                                    <td className="px-3 py-3 text-sm font-VazirBold text-neutral-07 whitespace-nowrap">{item.customer}</td>
+                                    <td className="px-3 py-3">
+                                        <div className="flex items-center gap-2 justify-center">
+                                            <img src={item.img} className="size-9 rounded-md object-cover shrink-0" alt={item.product} />
+                                            <span className="text-xs text-neutral-04 font-VazirMedium text-right max-w-[120px] line-clamp-1">{item.product}</span>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4">
-                                        <div className="text-sm font-VazirBold text-neutral-07">
-                                            {item.price} <span className="text-[10px] font-VazirRegular text-neutral-04 mr-1">تومان</span>
-                                        </div>
+                                    <td className="px-3 py-3 text-sm font-VazirBold text-neutral-07 whitespace-nowrap">
+                                        {item.price} <span className="text-[10px] font-VazirRegular text-neutral-04">تومان</span>
                                     </td>
-                                    <td className="px-6 py-4">
-                                        <span
-                                            className={`px-3 py-1 rounded-full text-[10px] font-VazirBold ${item.status === 'تکمیل شده'
-                                                ? 'bg-emerald-50 text-emerald-600'
-                                                : item.status === 'در حال پردازش'
-                                                    ? 'bg-blue-50 text-blue-600'
-                                                    : 'bg-rose-50 text-rose-600'
-                                                }`}
-                                        >
+                                    <td className="px-3 py-3">
+                                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-VazirBold whitespace-nowrap ${statusStyles[item.status]}`}>
                                             {item.status}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 text-[11px] text-gray-400 font-VazirMedium text-left">{item.date}</td>
+                                    <td className="px-3 py-3 text-[11px] text-gray-400 font-VazirMedium whitespace-nowrap">{item.date}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -369,8 +284,8 @@ const AdminDashboard: React.FC = () => {
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default AdminDashboard;
 
