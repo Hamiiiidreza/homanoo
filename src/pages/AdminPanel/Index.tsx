@@ -48,7 +48,7 @@ const Index: React.FC = () => {
 
                 <section className="w-full p-2">
                     <div className="p-4 sm:p-6 bg-white border border-neutral-02 shadow-sm rounded-md">
-                        <header className="flex flex-wrap lg:flex-nowrap items-center justify-between gap-4">
+                        <header className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-4">
                             <div className="flex items-center gap-3">
                                 <SheetTrigger asChild>
                                     <button className="lg:hidden">
@@ -57,10 +57,10 @@ const Index: React.FC = () => {
                                 </SheetTrigger>
 
                                 <div>
-                                    <h2 className="text-lg sm:text-xl font-VazirBold text-neutral-07">
+                                    <h2 className="text-base md:text-xl font-VazirBold text-neutral-07">
                                        سلام مدیریت محترم
                                     </h2>
-                                    <p className="font-VazirMedium text-neutral-04 text-xs sm:text-sm mt-2">
+                                    <p className="font-VazirMedium text-neutral-04 text-xs md:text-sm mt-2">
                                         خوش آمدید! در اینجا نمای کلی از عملکرد فروشگاه را مشاهده میکنید.
                                     </p>
                                 </div>
@@ -80,7 +80,7 @@ const Index: React.FC = () => {
                                 <div className="hidden sm:block w-[1px] h-6 bg-neutral-03 mx-1"></div>
 
                                 <div className="flex items-center gap-2 sm:gap-3">
-                                    <span className="hidden sm:flex items-center gap-1 text-sm lg:text-lg font-VazirMedium text-neutral-07">
+                                    <span className="hidden md:flex items-center gap-1 text-sm lg:text-lg font-VazirMedium text-neutral-07">
                                         سینا یوسفی
                                         <ChevronDown size={14} />
                                     </span>
