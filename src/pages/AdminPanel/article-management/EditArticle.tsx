@@ -523,7 +523,7 @@ const EditArticle: React.FC = () => {
                     </div>
 
                     <div className="col-span-12 flex min-h-[500px] h-full flex-col justify-between space-y-6 rounded-md border border-gray-200 bg-white p-5 shadow-sm lg:col-span-4">
-                        <div className="space-y-10">
+                        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-1">
                             <div className="space-y-2.5">
                                 <div className="flex items-center gap-2 text-gray-800">
                                     <FolderOpen className="size-4 text-secondary-color-blue" />
