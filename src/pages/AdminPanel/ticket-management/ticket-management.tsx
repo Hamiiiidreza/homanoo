@@ -8,7 +8,6 @@ import {
     AlertCircle,
     Clock3,
     CheckCircle2,
-    MoveUpRight,
     LucideIcon,
 } from 'lucide-react';
 import CustomInput from '../../../components/ui/custom-input';
@@ -19,10 +18,6 @@ type Status = 'باز' | 'در حال بررسی' | 'بسته شده';
 interface Ticket {
     id: number;
     title: string;
-    customer: {
-        name: string;
-        avatar?: string;
-    };
     status: Status;
     isReplied: boolean;
     lastUpdate: string;
@@ -38,7 +33,6 @@ const tickets: Ticket[] = [
     {
         id: 1,
         title: 'مشکل در ورود به حساب',
-        customer: { name: 'حسای' },
         status: 'باز',
         isReplied: true,
         lastUpdate: '۱۴۰۳/۱۲/۲۸ - ۰۵:۲۴',
@@ -46,7 +40,6 @@ const tickets: Ticket[] = [
     {
         id: 2,
         title: 'پیگیری سفارش شماره ۱۲۵۸',
-        customer: { name: 'حسای' },
         status: 'در حال بررسی',
         isReplied: true,
         lastUpdate: '۱۴۰۳/۰۷/۱۶ - ۰۵:۲۷',
@@ -54,7 +47,6 @@ const tickets: Ticket[] = [
     {
         id: 3,
         title: 'سوال در مورد محصول مبل راحتی',
-        customer: { name: 'محسنی' },
         status: 'در حال بررسی',
         isReplied: false,
         lastUpdate: '۱۴۰۳/۰۷/۰۵ - ۰۵:۲۲',
@@ -62,7 +54,6 @@ const tickets: Ticket[] = [
     {
         id: 4,
         title: 'درخواست مرجوعی کالا',
-        customer: { name: 'مسنی' },
         status: 'بسته شده',
         isReplied: true,
         lastUpdate: '۱۴۰۳/۰۸/۱۱ - ۰۵:۰۳',
@@ -100,44 +91,44 @@ const TicketManagement: React.FC = () => {
     ];
 
     return (
-        <section className="w-full bg-white rounded-md shadow-lg my-10 p-6 border transition-all hover:drop-shadow-custom">
+        <section className="w-full rounded-md border bg-white p-4 shadow-lg transition-all hover:drop-shadow-custom md:my-10 md:p-6">
             {/* Header */}
-            <div className="mb-8">
+            <div className="mb-6 md:mb-8">
                 <div className="flex items-center justify-start gap-3">
-                    <div className="flex items-center justify-center size-9 rounded-md bg-neutral-01">
+                    <div className="flex size-9 items-center justify-center rounded-md bg-neutral-01">
                         <MessageSquareText className="text-secondary-color-blue" />
                     </div>
 
-                    <h2 className="flex items-center text-2xl font-VazirBold text-neutral-07">
+                    <h2 className="flex items-center text-xl font-VazirBold text-neutral-07 md:text-2xl">
                         تیکت‌ها
                     </h2>
                 </div>
 
-                <p className="font-VazirRegular text-sm text-gray-500 mt-2">
+                <p className="mt-2 text-xs font-VazirRegular leading-relaxed text-gray-500 md:text-sm">
                     لیست و مدیریت تیکت‌های پشتیبانی کاربران را مشاهده و کنترل کنید.
                 </p>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-6 w-full">
+            <div className="mb-6 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-5">
                 {ticketStats.map((item, index) => {
                     const Icon = item.icon;
 
                     return (
                         <div
                             key={index}
-                            className="bg-white border rounded-md p-5 flex items-start gap-4 shadow-sm transition-all hover:drop-shadow-custom"
+                            className="flex items-center gap-4 rounded-md border bg-white p-4 shadow-sm transition-all hover:drop-shadow-custom md:items-start md:p-5"
                         >
-                            <div className="size-12 flex items-center justify-center rounded-full bg-neutral-01 text-secondary-color-blue">
-                                <Icon size={22} />
+                            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-neutral-01 text-secondary-color-blue md:size-12">
+                                <Icon size={20} className="md:h-[22px] md:w-[22px]" />
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <span className="text-neutral-07 text-xs font-VazirMedium">
+                                <span className="text-xs font-VazirMedium text-neutral-07">
                                     {item.title}
                                 </span>
 
-                                <span className="text-neutral-07 text-base font-VazirBold">
+                                <span className="text-base font-VazirBold text-neutral-07">
                                     {item.count.toLocaleString('fa-ir')}
                                 </span>
                             </div>
@@ -147,98 +138,173 @@ const TicketManagement: React.FC = () => {
             </div>
 
             {/* Controls */}
-            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-3 mb-6">
-                <div className="flex flex-col sm:flex-row gap-2">
-                    <CustomInput
-                        type="text"
-                        placeholder="جستجو بر اساس عنوان تیکت یا نام مشتری..."
-                        inputClassName="h-10 w-full rounded-md border bg-white px-4 font-VazirRegular text-sm outline-none transition-all placeholder:text-neutral-04 focus:border-neutral-04 sm:w-80 pl-10"
-                    />
+            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+                    <div className="w-full sm:w-80">
+                        <CustomInput
+                            type="text"
+                            placeholder="جستجو بر اساس عنوان تیکت..."
+                            inputClassName="h-10 w-full rounded-md border bg-white px-4 pl-10 font-VazirRegular text-sm outline-none transition-all placeholder:text-neutral-04 focus:border-neutral-04"
+                        />
+                    </div>
 
-                    <button className="flex items-center justify-center gap-2 border px-4 h-10 font-VazirRegular rounded-md cursor-pointer transition-all hover:bg-main hover:text-white">
+                    <button className="flex h-10 w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-md border px-4 text-sm font-VazirRegular transition-all hover:bg-main hover:text-white sm:w-auto">
                         <FunnelPlus size={16} />
                         فیلتر
                     </button>
                 </div>
             </div>
 
-            {/* Table */}
-            <div className="bg-white rounded-md shadow-sm border overflow-x-auto">
-                <table className="w-full text-center border rounded-md overflow-hidden">
-                    <thead className="bg-gray-50 border-b">
-                        <tr className="bg-gray-50 text-neutral-07 font-VazirMedium text-xs border-b border-gray-100">
-                            <th className="p-4">شماره</th>
-                            <th className="p-4">عنوان</th>
-                            <th className="p-4">وضعیت</th>
-                            <th className="p-4">پاسخ داده</th>
-                            <th className="p-4">آخرین بروزرسانی</th>
-                            <th className="p-4">عملیات</th>
-                        </tr>
-                    </thead>
+            {/* Desktop Table */}
+            <div className="overflow-hidden rounded-md border bg-white shadow-sm">
+                <div className="hidden overflow-x-auto md:block">
+                    <table className="w-full border-collapse text-center">
+                        <thead className="border-b bg-gray-50">
+                            <tr className="border-b border-gray-100 bg-gray-50 text-xs font-VazirMedium text-neutral-07">
+                                <th className="p-4">شماره</th>
+                                <th className="p-4">عنوان</th>
+                                <th className="p-4">وضعیت</th>
+                                <th className="p-4">پاسخ داده</th>
+                                <th className="p-4">آخرین بروزرسانی</th>
+                                <th className="p-4">عملیات</th>
+                            </tr>
+                        </thead>
 
-                    <tbody>
-                        {tickets.map((ticket) => (
-                            <tr
-                                key={ticket.id}
-                                className="border rounded-md shadow-sm overflow-hidden mt-1 border-gray-50 hover:bg-gray-50 transition-colors"
-                            >
-                                <td className="p-4 font-VazirMedium text-xs">
-                                    {ticket.id}
-                                </td>
+                        <tbody>
+                            {tickets.map((ticket) => (
+                                <tr
+                                    key={ticket.id}
+                                    className="border-b border-gray-100 transition-colors hover:bg-gray-50/50"
+                                >
+                                    <td className="p-4 text-xs font-VazirMedium">
+                                        {ticket.id}
+                                    </td>
 
-                                <td className="p-4 font-VazirMedium text-sm text-neutral-07">
+                                    <td className="max-w-xs p-4 text-right text-sm font-VazirMedium text-neutral-07 truncate">
+                                        {ticket.title}
+                                    </td>
+
+                                    <td className="p-4">
+                                        <div className="flex justify-center">
+                                            <StatusBadge status={ticket.status} />
+                                        </div>
+                                    </td>
+
+                                    <td className="p-4">
+                                        <div className="flex justify-center">
+                                            <span
+                                                className={`inline-flex items-center justify-center rounded-md px-3 py-1.5 text-xs font-VazirMedium ${ticket.isReplied
+                                                        ? 'bg-green-50 text-green-600'
+                                                        : 'bg-orange-50 text-orange-600'
+                                                    }`}
+                                            >
+                                                {ticket.isReplied ? 'پاسخ داده شده' : 'در انتظار پاسخ'}
+                                            </span>
+                                        </div>
+                                    </td>
+
+                                    <td className="p-4 text-sm font-VazirMedium text-gray-600">
+                                        {ticket.lastUpdate}
+                                    </td>
+
+                                    <td className="p-4">
+                                        <div className="flex items-center justify-center gap-4">
+                                            <button
+                                                className="cursor-pointer text-secondary-color-blue transition-colors hover:text-gray-600"
+                                                title="مشاهده"
+                                            >
+                                                <Eye size={18} />
+                                            </button>
+
+                                            <button
+                                                className="cursor-pointer text-secondary-color-blue transition-colors hover:text-gray-600"
+                                                title="پاسخ"
+                                            >
+                                                <Reply size={18} />
+                                            </button>
+
+                                            <button
+                                                className="cursor-pointer text-green-600 transition-colors hover:text-gray-600"
+                                                title="تایید نهایی"
+                                            >
+                                                <CheckCheck size={18} />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* Mobile Cards */}
+                <div className="block divide-y divide-gray-100 md:hidden">
+                    {tickets.map((ticket) => (
+                        <div
+                            key={ticket.id}
+                            className="flex flex-col gap-3 p-4 transition-colors hover:bg-gray-50/50"
+                        >
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-VazirMedium text-gray-400">
+                                    تیکت #{ticket.id}
+                                </span>
+
+                                <div className="flex items-center gap-4">
+                                    <button className="p-1 text-secondary-color-blue" title="مشاهده">
+                                        <Eye size={18} />
+                                    </button>
+
+                                    <button className="p-1 text-secondary-color-blue" title="پاسخ">
+                                        <Reply size={18} />
+                                    </button>
+
+                                    <button className="p-1 text-green-600" title="تایید">
+                                        <CheckCheck size={18} />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 className="mb-1 text-sm font-VazirBold text-neutral-07">
                                     {ticket.title}
-                                </td>
+                                </h3>
+                            </div>
 
-                                <td className="p-4">
+                            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-dashed border-gray-100 pt-2">
+                                <div className="flex gap-1.5">
                                     <StatusBadge status={ticket.status} />
-                                </td>
 
-                                <td className="p-4">
                                     <span
-                                        className={`flex items-center justify-center py-2 px-3 rounded-md text-xs font-VazirMedium ${ticket.isReplied
+                                        className={`inline-flex items-center justify-center rounded-md px-2.5 py-1 text-[10px] font-VazirMedium ${ticket.isReplied
                                                 ? 'bg-green-50 text-green-600'
                                                 : 'bg-orange-50 text-orange-600'
                                             }`}
                                     >
-                                        {ticket.isReplied ? 'پاسخ داده شده' : 'در انتظار پاسخ'}
+                                        {ticket.isReplied ? 'پاسخ داده شده' : 'در انتظار'}
                                     </span>
-                                </td>
+                                </div>
 
-                                <td className="p-4 text-sm text-gray-600 font-VazirMedium">
+                                <span className="text-[11px] font-VazirMedium text-gray-400">
                                     {ticket.lastUpdate}
-                                </td>
-
-                                <td className="p-4">
-                                    <div className="flex items-center justify-center gap-6">
-                                        <button className="flex flex-col items-center cursor-pointer text-secondary-color-blue transition-all hover:text-gray-600">
-                                            <Eye size={18} />
-                                        </button>
-
-                                        <button className="flex flex-col items-center cursor-pointer text-secondary-color-blue transition-all hover:text-gray-600">
-                                            <Reply size={18} />
-                                        </button>
-
-                                        <button className="flex flex-col items-center cursor-pointer text-green-600 transition-all hover:text-gray-600">
-                                            <CheckCheck size={18} />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                                </span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
 
-            <CustomPagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-                totalItems={totalTickets}
-                itemsPerPage={itemsPerPage}
-                onItemsPerPageChange={setItemsPerPage}
-                label="تیکت"
-            />
+            {/* Pagination */}
+            <div className="mt-6">
+                <CustomPagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={totalTickets}
+                    itemsPerPage={itemsPerPage}
+                    onItemsPerPageChange={setItemsPerPage}
+                    label="تیکت"
+                />
+            </div>
         </section>
     );
 };
@@ -252,7 +318,7 @@ const StatusBadge = ({ status }: { status: Status }) => {
 
     return (
         <span
-            className={`flex items-center justify-center py-2 px-3 rounded-md text-xs font-VazirMedium ${statusClasses[status]}`}
+            className={`inline-flex items-center justify-center rounded-md px-2.5 py-1 text-xs font-VazirMedium ${statusClasses[status]}`}
         >
             {status}
         </span>
