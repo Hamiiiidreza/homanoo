@@ -6,7 +6,6 @@ import Breadcrumb from "../../components/modules/breadcrumb/breadcrumb";
 import FilterAndSortpanel from "../../components/ui/filter-and-sortpanel";
 import ProductSection from "../../components/modules/product-section/product-section";
 import PageHierarchy from "../../components/modules/Page-Hierarchy/page-hierarchy";
-import Newsletter from "../../components/modules/news-letter/news-letter";
 import Footer from "../../components/modules/footer/footer";
 
 const Shop: React.FC = () => {
@@ -30,7 +29,6 @@ const Shop: React.FC = () => {
           isSlider={false}
         />
         <div>
-          <Newsletter />
           <Footer />
         </div>
       </div>
