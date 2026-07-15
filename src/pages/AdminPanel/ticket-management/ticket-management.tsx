@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import CustomInput from '../../../components/ui/custom-input';
 import CustomPagination from '../../../components/ui/custom-pagination';
+import { useNavigate } from "react-router-dom";
 
 type Status = 'باز' | 'در حال بررسی' | 'بسته شده';
 
@@ -63,6 +64,7 @@ const tickets: Ticket[] = [
 const TicketManagement: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
+    const navigate = useNavigate();
 
     const totalTickets = 42;
     const totalPages = Math.ceil(totalTickets / itemsPerPage);
@@ -194,8 +196,8 @@ const TicketManagement: React.FC = () => {
                                         <div className="flex justify-center">
                                             <span
                                                 className={`inline-flex items-center justify-center rounded-md px-3 py-1.5 text-xs font-VazirMedium ${ticket.isReplied
-                                                        ? 'bg-green-50 text-green-600'
-                                                        : 'bg-orange-50 text-orange-600'
+                                                    ? 'bg-green-50 text-green-600'
+                                                    : 'bg-orange-50 text-orange-600'
                                                     }`}
                                             >
                                                 {ticket.isReplied ? 'پاسخ داده شده' : 'در انتظار پاسخ'}
@@ -210,6 +212,7 @@ const TicketManagement: React.FC = () => {
                                     <td className="p-4">
                                         <div className="flex items-center justify-center gap-4">
                                             <button
+                                                onClick={() => navigate("/p-admin/admin-tickets/ticket-detail")}
                                                 className="cursor-pointer text-secondary-color-blue transition-colors hover:text-gray-600"
                                                 title="مشاهده"
                                             >
@@ -217,6 +220,7 @@ const TicketManagement: React.FC = () => {
                                             </button>
 
                                             <button
+                                                onClick={() => navigate("/p-admin/admin-tickets/ticket-detail")}
                                                 className="cursor-pointer text-secondary-color-blue transition-colors hover:text-gray-600"
                                                 title="پاسخ"
                                             >
@@ -276,8 +280,8 @@ const TicketManagement: React.FC = () => {
 
                                     <span
                                         className={`inline-flex items-center justify-center rounded-md px-2.5 py-1 text-[10px] font-VazirMedium ${ticket.isReplied
-                                                ? 'bg-green-50 text-green-600'
-                                                : 'bg-orange-50 text-orange-600'
+                                            ? 'bg-green-50 text-green-600'
+                                            : 'bg-orange-50 text-orange-600'
                                             }`}
                                     >
                                         {ticket.isReplied ? 'پاسخ داده شده' : 'در انتظار'}
