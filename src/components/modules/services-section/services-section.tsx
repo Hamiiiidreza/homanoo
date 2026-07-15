@@ -39,10 +39,10 @@ const ServicesSection: React.FC<ServicesSectionProps> = ({
     <section className='w-full bg-white transition-all mt-20'>
       <h2 className="font-VazirMedium pb-15 text-xl sm:text-4.5xl text-black leading-none tracking-headline-7 transition-all hover:drop-shadow-custom">
         {" "}
-        چرا ۳اِلِگِنت رو انتخاب کنیم؟
+        چرا هومانو رو انتخاب کنیم؟
       </h2>
       {withBackground ? (
-        <div className="w-full bg-neutral-02 py-12">
+        <div className="w-full bg-neutral-02 rounded-xl py-12">
            {Cards} 
         </div>
       ) : (
