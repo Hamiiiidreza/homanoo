@@ -8,7 +8,6 @@ import ProductSection from "../../components/modules/product-section/product-sec
 import ServicesSection from "../../components/modules/services-section/services-section";
 import SaleBanner from "../../components/modules/sale-banner/sale-banner";
 import BlogSection from "../../components/modules/blog-section/blog-section";
-import Newsletter from "../../components/modules/news-letter/news-letter";
 import Footer from "../../components/modules/footer/footer";
 
 function Home() {
@@ -45,8 +44,6 @@ function Home() {
           />
           <BlogSection />
           <div>
-            <Newsletter />
-
             <Footer />
           </div>
         </div>

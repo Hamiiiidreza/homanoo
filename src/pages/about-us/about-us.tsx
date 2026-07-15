@@ -47,10 +47,12 @@ function AboutUs() {
                     }
                     descriptionClass='text-base leading-6.5'
                 />
-                <ServicesSection
-                    withBackground
-                    withPaddingBottom={false}
-                />
+                <div className="mb-10">
+                    <ServicesSection
+                        withBackground
+                        withPaddingBottom={false}
+                    />
+                </div>
                 <Footer />
             </div>
         </>

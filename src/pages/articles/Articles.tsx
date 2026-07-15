@@ -1,15 +1,17 @@
 import React from 'react'
+import Topbar from '../../components/modules/topbar/topbar';
 import Navbar from '../../components/modules/navbar/navbar';
 import Header from '../../components/templates/header/header';
 import Breadcrumb from '../../components/modules/breadcrumb/breadcrumb';
 import FilterAndSortpanel from '../../components/ui/filter-and-sortpanel';
 import BlogSection from '../../components/modules/blog-section/blog-section';
-import Newsletter from '../../components/modules/news-letter/news-letter';
 import Footer from '../../components/modules/footer/footer';
 
 function Articles() {
     return (
-        <div className='relative'>
+        <div>
+            <Topbar />
+            <div className="px-3 sm:!px-8 xl:!px-40">
             <Navbar />
             <Header
                 singleImage="/Images/img-placeholder-4.png"
@@ -34,8 +36,8 @@ function Articles() {
                 count={9}
                 showFullCards={true}
             />
-            <Newsletter />
             <Footer />
+            </div>
         </div>
     )
 }
