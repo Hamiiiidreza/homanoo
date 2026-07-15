@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import CartSidebar from '../cart-sidebar/cart-sidebar';
 import MobileMenu from '../mobile-menu/mobile-menu';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Search } from 'lucide-react';
 import { Button } from "../../ui/button";
 import AuthForm from '../../templates/auth-form/auth-form';
 
 export enum Routes {
   HOME = '/',
-  SHOP = '/Shop',
   ABOUT = '/about-us',
+  SHOP = '/Shop',
+  ARTICLES = '/articles',
   CONTACT = '/contact-us',
 };
 
@@ -21,8 +22,9 @@ type MenuItem = {
 const Navbar: React.FC = () => {
   const [menuItems] = useState<MenuItem[]>([
     { name: 'خانه', path: Routes.HOME },
-    { name: 'فروشگاه', path: Routes.SHOP },
     { name: 'درباره ما', path: Routes.ABOUT },
+    { name: 'فروشگاه', path: Routes.SHOP },
+    { name: 'مقالات', path: Routes.ARTICLES },
     { name: 'تماس با ما', path: Routes.CONTACT },
   ]);
   const [openCart, setOpenCart] = useState<boolean>(false);
@@ -57,7 +59,7 @@ const Navbar: React.FC = () => {
           </Link>
         </div>
 
-        <ul className="hidden md:flex items-center gap-10 py-4.5 font-VazirMedium text-sm">
+        <ul className="hidden md:flex items-center gap-8 py-4.5 font-VazirMedium text-sm relative right-8">
           {menuItems.map((menu: MenuItem) => (
             <li className="group" key={menu.path}>
               <Link
@@ -74,11 +76,7 @@ const Navbar: React.FC = () => {
 
         <div className="flex items-center gap-4 py-4">
           <Link to='' className="hidden sm:block">
-            <img
-              src="/Images/Search.svg"
-              alt="search-icon"
-              className="size-6 hover:drop-shadow-custom transition-all cursor-pointer"
-            />
+            <Search size={20} className='transition-all hover:drop-shadow-custom' />
           </Link>
 
           <div className="flex items-center justify-center gap-2 relative">
