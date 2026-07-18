@@ -24,7 +24,7 @@ type CustomInputProps = {
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     register?: any;
     showEditIcon?: boolean;
-    error?: string;
+    error?: string | undefined
 };
 
 const CustomInput: React.FC<CustomInputProps> = ({
