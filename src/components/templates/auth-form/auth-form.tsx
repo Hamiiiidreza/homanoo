@@ -65,10 +65,13 @@ export default function AuthForm({
       >
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-VazirBold">
-            {isLogin ? "ورود به حساب" : "ایجاد حساب"}
+            <img
+              className="w-60 h-31 rounded-md overflow-hidden mx-auto"
+              src="/Images/logo-3.png"
+              alt="logo" />
           </DialogTitle>
 
-          <p className="text-center text-gray-500 text-sm font-VazirRegular">
+          <p className="text-center text-gray-500 text-sm font-VazirRegular -mt-5">
             {isLogin
               ? "برای ادامه وارد شوید"
               : "اطلاعات زیر را برای ثبت نام وارد کنید"}
