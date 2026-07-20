@@ -3,4 +3,18 @@ body {
   background-color: white;
   min-height: 100vh;
   overflow-x: hidden;
+  font-family: 'Vazir Regular';
+}
+
+.leaflet-control-attribution {
+  display: none;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+td {
+  padding: 10px;
+  white-space: nowrap;
 }
