@@ -1,14 +1,12 @@
 import React from 'react'
-import Topbar from '../../components/modules/topbar/topbar';
-import Navbar from '../../components/modules/navbar/navbar';
-import Footer from '../../components/modules/footer/footer';
 import PageHierarchy from '../../components/modules/Page-Hierarchy/page-hierarchy';
 import ProductDetails from '../../components/templates/product-details/product-details';
-import { ProductCardProps } from '../../types/product.types';
+import type { Product } from '../../types/product.types';
 import { useParams } from "react-router-dom";
+import Container from '../../components/modules/container';
 
 type ProductProps = {
-  product: ProductCardProps;
+  product: Product;
 }
 
 const Product: React.FC<ProductProps> = ({ product }) => {
@@ -17,15 +15,12 @@ const Product: React.FC<ProductProps> = ({ product }) => {
 
   return (
     <div>
-      <Topbar />
-      <div className="px-3 sm:!px-8 xl:!px-40">
-        <Navbar />
+      <Container>
         <PageHierarchy
           items={["خانه", "فروشگاه", "اتاق نشیمن", "محصول"]}
         />
         <ProductDetails />
-        <Footer />
-      </div>
+      </Container>
     </div>
   )
 }

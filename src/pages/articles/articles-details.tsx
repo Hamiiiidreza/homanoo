@@ -1,18 +1,14 @@
 import React from 'react'
-import Topbar from '../../components/modules/topbar/topbar';
-import Navbar from '../../components/modules/navbar/navbar';
 import ArticlesSample from '../../components/templates/articles-details/articles-sample';
 import PageHierarchy from '../../components/modules/Page-Hierarchy/page-hierarchy'
-import Footer from '../../components/modules/footer/footer';
+import Container from '../../components/modules/container';
 
 function ArticlesDetails() {
 
 
     return (
         <div>
-            <Topbar />
-            <div className="px-3 sm:!px-8 xl:!px-40">
-                <Navbar />
+            <Container>
                 <PageHierarchy
                     items={[
                         "خانه",
@@ -23,8 +19,7 @@ function ArticlesDetails() {
                 <div className="mb-10">
                     <ArticlesSample />
                 </div>
-                <Footer />
-            </div>
+            </Container>
         </div>
     )
 }

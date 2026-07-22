@@ -1,17 +1,13 @@
 import React from 'react'
-import Topbar from '../../components/modules/topbar/topbar';
-import Navbar from '../../components/modules/navbar/navbar';
 import PageHierarchy from '../../components/modules/Page-Hierarchy/page-hierarchy';
 import SaleBanner from '../../components/modules/sale-banner/sale-banner';
 import ServicesSection from '../../components/modules/services-section/services-section';
-import Footer from '../../components/modules/footer/footer';
+import Container from '../../components/modules/container';
 
 function AboutUs() {
     return (
         < >
-            <Topbar />
-            <div className='px-3 sm:!px-8 xl:!px-40'>
-                <Navbar />
+            <Container>
                 <PageHierarchy
                     items={[
                         "خانه",
@@ -53,8 +49,7 @@ function AboutUs() {
                         withPaddingBottom={false}
                     />
                 </div>
-                <Footer />
-            </div>
+            </Container>
         </>
     )
 }

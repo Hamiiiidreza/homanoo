@@ -1,6 +1,6 @@
 import React from 'react'
-import Navbar from '../../components/modules/navbar/navbar';
-import Footer from '../../components/modules/footer/footer';
+import Navbar from '../../components/modules/navbar';
+import Footer from '../../components/modules/footer';
 import PaymentDetails from '../../components/templates/checkout/payment-details';
 
 function Checkout() {

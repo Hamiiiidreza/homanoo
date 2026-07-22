@@ -1,21 +1,17 @@
 import React from "react";
-import Topbar from "../../components/modules/topbar/topbar";
-import Navbar from "../../components/modules/navbar/navbar";
 import Header from "../../components/templates/header/header";
-import Hero from "../../components/templates/hero/hero";
+import Hero from "../../components/screens/home/partials/hero";
 import CategorySection from "../../components/templates/category-section/category-section";
 import ProductSection from "../../components/modules/product-section/product-section";
 import ServicesSection from "../../components/modules/services-section/services-section";
 import SaleBanner from "../../components/modules/sale-banner/sale-banner";
 import BlogSection from "../../components/modules/blog-section/blog-section";
-import Footer from "../../components/modules/footer/footer";
+import Container from "../../components/modules/container";
 
 function Home() {
   return (
     <div>
-      <Topbar />
-      <div className="px-3 sm:!px-8 xl:!px-40">
-        <Navbar />
+      <Container>
         <Header
           images={[
             "/Images/img-placeholder-1.png",
@@ -30,7 +26,7 @@ function Home() {
 
           <CategorySection />
           <ProductSection
-            showHeader={true}  
+            showHeader={true}
           />
           <ServicesSection />
           <SaleBanner
@@ -44,10 +40,9 @@ function Home() {
           />
           <BlogSection />
           <div>
-            <Footer />
           </div>
         </div>
-      </div>
+      </Container>
     </div>
   );
 }

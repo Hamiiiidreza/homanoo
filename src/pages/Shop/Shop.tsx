@@ -1,37 +1,29 @@
 import React, { useState } from "react";
-import Topbar from "../../components/modules/topbar/topbar";
-import Navbar from "../../components/modules/navbar/navbar";
 import Header from "../../components/templates/header/header";
 import Breadcrumb from "../../components/modules/breadcrumb/breadcrumb";
 import FilterAndSortpanel from "../../components/ui/filter-and-sortpanel";
 import ProductSection from "../../components/modules/product-section/product-section";
 import PageHierarchy from "../../components/modules/Page-Hierarchy/page-hierarchy";
-import Footer from "../../components/modules/footer/footer";
+import Container from "../../components/modules/container";
 
 const Shop: React.FC = () => {
-  
+
   return (
     <div>
-      <Topbar />
-      <div className="px-3 sm:!px-8 xl:!px-40">
-        <Navbar />
-          
+      <Container>
         <PageHierarchy
-        items={[
-          "خانه",
-          "فروشگاه",
-        ]}
+          items={[
+            "خانه",
+            "فروشگاه",
+          ]}
         />
-          <FilterAndSortpanel mode="shop" />
-        
+        <FilterAndSortpanel mode="shop" />
+
         <ProductSection
           showHeader={false}
           isSlider={false}
         />
-        <div>
-          <Footer />
-        </div>
-      </div>
+      </Container>
     </div>
 
   );
