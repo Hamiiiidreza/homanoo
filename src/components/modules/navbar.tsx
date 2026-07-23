@@ -5,7 +5,7 @@ import CartSidebar from './cart-sidebar';
 import MobileMenu from './mobile-menu';
 import NavUser from './authoritarian/nav-user';
 import { Menu, ShoppingCartIcon, Search } from 'lucide-react';
-import { useUser } from '../../ednpionts/useUser';
+import { useUser } from '../../endpoints/useUser';
 
 export enum Routes {
   HOME = '/',

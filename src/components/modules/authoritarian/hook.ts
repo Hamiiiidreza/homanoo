@@ -2,8 +2,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useRegister as useRegisterEndpoint } from '../../../ednpionts/useRegister';
-import { useLogin as useLoginEndpoint } from '../../../ednpionts/useLogin';
+import { useRegister as useRegisterEndpoint } from '../../../endpoints/useRegister';
+import { useLogin as useLoginEndpoint } from '../../../endpoints/useLogin';
 
 const registerSchema = z
     .object({
