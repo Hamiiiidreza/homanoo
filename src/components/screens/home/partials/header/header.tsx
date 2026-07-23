@@ -5,7 +5,10 @@ import {
   CarouselContent,
   CarouselItem,
   type CarouselApi,
-} from "../../ui/carousel";
+} from "../../../../ui/carousel";
+import { localAssetsUrl } from "../../../../../utils/constants";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import headerSkeleton from "./header-skeleton";
 
 type HeaderProps = {
   images?: string[];

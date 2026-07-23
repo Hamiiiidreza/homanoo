@@ -1,5 +1,5 @@
 import React from 'react';
-import ArrowLink from '../../ui/arrow-link';
+import ArrowLink from '../ui/arrow-link';
 
 type SaleBannerProps = {
     showSaleText?: boolean;
