@@ -1,5 +1,5 @@
 import React from 'react'
-import Header from '../../components/templates/header/header';
+import Header from '../../components/screens/home/partials/header/header';
 import Breadcrumb from '../../components/modules/breadcrumb/breadcrumb';
 import FilterAndSortpanel from '../../components/ui/filter-and-sortpanel';
 import BlogSection from '../../components/modules/blog-section/blog-section';

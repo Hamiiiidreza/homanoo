@@ -1,6 +1,6 @@
 import React from 'react'
 import PageHierarchy from '../../components/modules/Page-Hierarchy/page-hierarchy';
-import SaleBanner from '../../components/modules/sale-banner/sale-banner';
+import SaleBanner from '../../components/modules/sale-banner';
 import ServicesSection from '../../components/modules/services-section/services-section';
 import Container from '../../components/modules/container';
 
