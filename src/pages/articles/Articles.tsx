@@ -1,6 +1,6 @@
 import React from 'react'
 import Header from '../../components/screens/home/partials/header/header';
-import Breadcrumb from '../../components/modules/breadcrumb/breadcrumb';
+import Breadcrumb from '../../components/modules/breadcrumb';
 import FilterAndSortpanel from '../../components/ui/filter-and-sortpanel';
 import BlogSection from '../../components/modules/blog-section/blog-section';
 import Container from '../../components/modules/container';
