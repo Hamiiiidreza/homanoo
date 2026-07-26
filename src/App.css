@@ -118,6 +118,8 @@
   --color-neutral-07: #141718;
   --color-black-900: #121212;
   --color-main: #2d397e;
+  --color-light-blue: #2d397e14;
+  --color-clay: #ca9b77;
   --font-InterRegular: "Inter Regular";
   --font-InterMedium: "Inter Medium";
   --font-InterSemiBold: "Inter SemiBold";
@@ -143,9 +145,10 @@
   --tracking-button-s: -0.025em;
 
   --drop-shadow-custom: 0 4px 4px rgba(0, 0, 0, 0.25);
-
-  --breakPoint-xs: 480px;
+  --shadow-m: 0px 4px 24px 0px #0000000d !important;
 }
+
+@custom-variant xs (@media (min-width: 480px));
 
 .scrollbar-custom::-webkit-scrollbar {
   width: 6px;
