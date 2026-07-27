@@ -4,7 +4,9 @@ import Card from '../../modules/product-card';
 import { Product } from '../../../types/product.types';
 import useShop from '../../../endpoints/useShop';
 import { useEffect } from 'react';
+import ProductFiltersWrapper from './partials/product-filters-wrapper';
 import ProductSkeleton from './partials/product-skeleton';
+import PaginationWrapper from '../../modules/pagination-wrapper';
 import { useNavigate } from 'react-router-dom';
 import { useProductFilters } from '../../../store/product-filter';
 
@@ -24,7 +26,8 @@ const ShopScreen = () => {
         <Container>
             <Breadcrumb className="pt-5" title="فروشگاه" />
 
-            <div className="flex flex-col gap-4 pt-5 pb-10 md:flex-row">   
+            <div className="flex flex-col gap-4 pt-5 pb-10 md:flex-row">
+                <ProductFiltersWrapper filtersData={filtersData} />
 
                 {!isPending || data?.products.length === 0 ? (
                     data?.products.length ? (
@@ -35,6 +38,12 @@ const ShopScreen = () => {
                                 ))}
                             </div>
 
+                            <PaginationWrapper
+                                key="shop"
+                                page={data.page}
+                                limit={5}
+                                totalItems={data.total}
+                            />
                         </div>
                     ) : (
                         <div className="w-full pt-20 text-center">
