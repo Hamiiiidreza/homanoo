@@ -35,7 +35,7 @@ import TicketDetail from "./pages/AdminPanel/ticket-management/ticket-detail";
 const routes = [
     { path: '/', element: <Home /> },
     { path: '/Shop', element: <Shop /> },
-    { path: '/product', element: <Product /> },
+    { path: '/product/:code/:slug', element: <Product /> },
     { path: '/contact-us', element: <ContactUs /> },
     { path: '/about-us', element: <AboutUs /> },
     { path: '/shopping-cart', element: <ShoppingCart /> },
