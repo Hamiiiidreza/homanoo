@@ -46,7 +46,7 @@ const Navbar = () => {
         <div className="flex items-center justify-center gap-2">
           <Menu onClick={() => setOpenMobileMenu(true)} className="md:hidden" size={24} />
           <Link to="/" className="font-VazirMedium text-base md:text-2xl leading-none py-4.5 overflow-hidden">
-            <img src="./Images/logo-3.png" alt="" className='w-30 h-16 rounded-md overflow-hidden' />
+            <img src="/Images/logo-3.png" alt="" className='w-30 h-16 rounded-md overflow-hidden' />
           </Link>
         </div>
 
