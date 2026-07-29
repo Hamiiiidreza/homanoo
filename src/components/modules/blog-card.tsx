@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import { BlogItem } from '../../../types/blog.types';
-import { localAssetsUrl } from '../../../utils/constants';
-import { toJalaliDate } from '../../../utils/helpers';
+import { BlogItem } from '../../types/blog.types';
+import { localAssetsUrl } from '../../utils/constants';
+import { toJalaliDate } from '../../utils/helpers';
 
 const BlogCard = ({
   name,
