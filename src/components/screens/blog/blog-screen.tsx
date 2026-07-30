@@ -1,7 +1,7 @@
 import { Calendar, ChevronLeft, UserCircle } from 'lucide-react';
 import Container from '../../modules/container';
 import { BlogItem } from '../../../types/blog.types';
-import BlogCard from '../../../components/modules/blog-section/blog-card';
+import BlogCard from '../../modules/blog-card';
 import Autoplay from 'embla-carousel-autoplay';
 import {
     Carousel,

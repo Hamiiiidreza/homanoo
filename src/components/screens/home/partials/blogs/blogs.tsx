@@ -1,5 +1,5 @@
 import { BlogItem } from '../../../../../types/blog.types';
-import BlogCard from '../../../../modules/blog-section/blog-card';
+import BlogCard from '../../../../modules/blog-card';
 import SectionTitle from '../../../../ui/section-header';
 import BlogsSkeleton from './blogs-skeleton';
 
