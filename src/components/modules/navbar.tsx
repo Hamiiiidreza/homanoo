@@ -11,7 +11,7 @@ export enum Routes {
   HOME = '/',
   ABOUT = '/about-us',
   SHOP = '/Shop',
-  ARTICLES = '/articles',
+  Blogs = '/blogs',
   CONTACT = '/contact-us',
 };
 
@@ -25,7 +25,7 @@ const Navbar = () => {
     { name: 'خانه', path: Routes.HOME },
     { name: 'درباره ما', path: Routes.ABOUT },
     { name: 'فروشگاه', path: Routes.SHOP },
-    { name: 'مقالات', path: Routes.ARTICLES },
+    { name: 'مقالات', path: Routes.Blogs },
     { name: 'تماس با ما', path: Routes.CONTACT },
   ]);
   const [openCart, setOpenCart] = useState<boolean>(false);

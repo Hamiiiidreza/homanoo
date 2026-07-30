@@ -8,8 +8,7 @@ import ContactUs from "./pages/contact-us/contact-us"
 import ShoppingCart from "./pages/shopping-cart/shopping-cart";
 import Checkout from "./pages/Checkout/Checkout";
 import OrderComplete from "./pages/order-complete/order-complete";
-import Articles from "./pages/articles/Articles";
-import ArticlesDetails from "./pages/articles/articles-details";
+import Blogs from './pages/blogs/blogs';
 import AboutUs from "./pages/about-us/about-us";
 
 import UserPanel from "./pages/UserPanel/Index";
@@ -41,8 +40,7 @@ const routes = [
     { path: '/shopping-cart', element: <ShoppingCart /> },
     { path: '/checkout', element: <Checkout /> },
     { path: '/order-complete', element: <OrderComplete /> },
-    { path: '/articles', element: <Articles /> },
-    { path: '/articles-details', element: <ArticlesDetails /> },
+    { path: '/blogs', element: <Blogs /> },
     {
         path: '/my-account',
         element: <UserPanel />,
