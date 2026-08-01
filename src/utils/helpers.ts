@@ -1,20 +1,15 @@
-export const toJalaliDate = (date: string | Date | undefined | null) => {
-    if (!date) return 'تاریخ نامشخص';
+import { CartItem } from '../types/user.types';
 
-    const parsedDate = new Date(date);
+export const toJalaliDate = (date: string | Date) => {
+    return new Intl.DateTimeFormat('fa-IR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    }).format(new Date(date));
+};
 
-    if (isNaN(parsedDate.getTime())) {
-        return 'تاریخ نامشخص';
-    }
-
-    try {
-        return new Intl.DateTimeFormat('fa-IR', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        }).format(parsedDate);
-    } catch (error) {
-        console.error("Error formatting Jalali date:", error);
-        return 'تاریخ نامشخص';
-    }
+export const getCartTotalPrice = (cart: CartItem[]) => {
+    const prices = cart.map((item) => item.quantity * item.product.price);
+    const total = prices.reduce((a, b) => a + b, 0);
+    return total;
 };
