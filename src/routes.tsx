@@ -5,10 +5,11 @@ import Home from "./pages/home/home";
 import Shop from "./pages/Shop/Shop"
 import Product from "./pages/Product/Product";
 import ContactUs from "./pages/contact-us/contact-us"
-import ShoppingCart from "./pages/shopping-cart/shopping-cart";
+import ShoppingCart from "./pages/cart/cart";
 import Checkout from "./pages/Checkout/Checkout";
 import OrderComplete from "./pages/order-complete/order-complete";
 import Blogs from './pages/blogs/blogs';
+import Blog from "./pages/blogs/blog/blog";
 import AboutUs from "./pages/about-us/about-us";
 
 import UserPanel from "./pages/UserPanel/Index";
@@ -37,10 +38,11 @@ const routes = [
     { path: '/product/:code/:slug', element: <Product /> },
     { path: '/contact-us', element: <ContactUs /> },
     { path: '/about-us', element: <AboutUs /> },
-    { path: '/shopping-cart', element: <ShoppingCart /> },
+    { path: '/cart', element: <ShoppingCart /> },
     { path: '/checkout', element: <Checkout /> },
     { path: '/order-complete', element: <OrderComplete /> },
     { path: '/blogs', element: <Blogs /> },
+    { path: '/blogs/:slug/:name', element: <Blog /> },
     {
         path: '/my-account',
         element: <UserPanel />,
