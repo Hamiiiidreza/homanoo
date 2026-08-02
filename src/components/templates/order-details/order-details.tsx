@@ -1,5 +1,5 @@
 import React from 'react'
-import Stepper from '../../modules/stepper/stepper';
+import Stepper from '../../modules/stepper';
 import Badge from '../../ui/badge';
 import ButtonCard from '../../ui/button-card';
 import { Button } from '../../ui/button';
