@@ -13,7 +13,7 @@ const DesktopProductCard = (item: CartItem) => {
             <div className="flex items-center gap-4">
                 <div className="bg-neutral-02">
                     <img
-                        src={localAssetsUrl + item.product.images[0]}
+                        src={`${localAssetsUrl}${item.product.images[0] ?? ''}`}
                         alt={item.product.name}
                         className="h-16 w-20 rounded-md object-cover mix-blend-multiply transition-all hover:shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
                     />
