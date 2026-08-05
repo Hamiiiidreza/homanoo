@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
 import Sidebar from "../../components/AdminPanel/sidebar/Sidebar";
-import MobileSidebar from "../../components/UserPanel/sidebar/mobile-sidebar";
+import MobileSidebar from "../../components/screens/user-panel/mobile-sidebar";
 import { Bell, Handbag, ChevronLeft, ChevronDown, Menu } from "lucide-react";
 
 import {
