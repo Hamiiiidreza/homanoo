@@ -12,9 +12,8 @@ import Blogs from './pages/blogs/blogs';
 import Blog from "./pages/blogs/blog/blog";
 import AboutUs from "./pages/about-us/about-us";
 
-import UserPanel from "./pages/UserPanel/Index";
+import UserPanel from "./pages/UserPanel/layout";
 import Dashboard from "./pages/UserPanel/Index/Dashboard";
-import Address from "./pages/UserPanel/address/Address";
 import Orders from "./pages/UserPanel/orders/Orders";
 import Wishlist from "./pages/UserPanel/wishlist/Wishlist";
 import Tickets from "./pages/UserPanel/tickets/tickets";
@@ -40,7 +39,7 @@ const routes = [
     { path: '/about-us', element: <AboutUs /> },
     { path: '/cart', element: <ShoppingCart /> },
     { path: '/checkout', element: <Checkout /> },
-    { path: '/order-complete', element: <OrderComplete /> },
+    { path: '/order-complete/:trackingCode', element: <OrderComplete /> },
     { path: '/blogs', element: <Blogs /> },
     { path: '/blogs/:slug/:name', element: <Blog /> },
     {
@@ -49,7 +48,6 @@ const routes = [
         children: [
             { index: true, element: <Navigate to="dashboard" replace /> },
             { path: "dashboard", element: <Dashboard /> },
-            { path: "address", element: <Address /> },
             { path: "orders", element: <Orders /> },
             { path: "wishlist", element: <Wishlist /> },
             { path: "tickets", element: <Tickets /> },
