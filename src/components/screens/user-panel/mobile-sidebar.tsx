@@ -12,7 +12,7 @@ function MobileSidebar() {
                 <img src="/Images/logo-3.png" alt="" className="w-30 h-16" />
             </Link>
 
-            <Sidebar />
+            <Sidebar className="" />
 
             <div className="bg-[url('/Images/banner-1.jpg')] w-full h-56 bg-cover bg-[position:50%_100%] sm:bg-[position:50%_90%] rounded-2xl mt-6 overflow-hidden">
                 <div className="p-4">
