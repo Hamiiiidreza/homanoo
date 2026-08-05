@@ -1,16 +1,7 @@
-import React from 'react'
-import Navbar from '../../components/modules/navbar';
-import OrderDetails from '../../components/templates/order-details/order-details';
-import Footer from '../../components/modules/footer';
+import OrderComplateScreen from '../../components/screens/order-complete/order-complete-screen';
 
 function OrderComplete() {
-    return (
-        <div className='px-3 sm:!px-8 xl:!px-40'>
-            <Navbar />
-            <OrderDetails />
-            <Footer />
-        </div>
-    )
+    return <OrderComplateScreen />
 }
 
 export default OrderComplete;
