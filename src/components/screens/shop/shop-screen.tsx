@@ -39,6 +39,7 @@ const ShopScreen = () => {
                             </div>
 
                             <PaginationWrapper
+                                variant="server"
                                 key="shop"
                                 page={data.page}
                                 limit={5}
