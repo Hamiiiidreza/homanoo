@@ -15,7 +15,7 @@ import AboutUs from "./pages/about-us/about-us";
 import UserPanel from "./pages/UserPanel/layout";
 import Dashboard from "./pages/UserPanel/Index/Dashboard";
 import Orders from "./pages/UserPanel/orders/Orders";
-import Wishlist from "./pages/UserPanel/wishlist/Wishlist";
+import Favorites from "./pages/UserPanel/favorites/favorites";
 import Tickets from "./pages/UserPanel/tickets/tickets";
 import UserAccount from "./pages/UserPanel/user-account/user-account";
 
@@ -49,7 +49,7 @@ const routes = [
             { index: true, element: <Navigate to="dashboard" replace /> },
             { path: "dashboard", element: <Dashboard /> },
             { path: "orders", element: <Orders /> },
-            { path: "wishlist", element: <Wishlist /> },
+            { path: 'favorites', element: <Favorites /> },
             { path: "tickets", element: <Tickets /> },
             { path: "user-account", element: <UserAccount /> },
         ]
