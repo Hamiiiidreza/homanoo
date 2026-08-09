@@ -34,7 +34,7 @@ const FavoritesScreen = () => {
                                 <div className="grid w-full grid-cols-1 gap-6 sm:!grid-cols-2 lg:!grid-cols-3 xl:!grid-cols-4">
                                     {currentItems.map((pr) => (
                                         <Card
-                                            key={pr.id}
+                                            key={pr._id}
                                             isPanel
                                             data={{
                                                 ...pr.product,
@@ -52,7 +52,7 @@ const FavoritesScreen = () => {
                     </p>
                 )
             ) : (
-                <div className="xs:grid-cols-2 grid w-full grid-cols-1 gap-6 pt-10 lg:!grid-cols-3">
+                <div className="xs:grid-cols-2 grid w-full grid-cols-1 gap-6 pt-10 lg:!grid-cols-4">
                     {Array.from({ length: 6 }).map((_, index) => (
                         <ProductSkeleton key={index} />
                     ))}
