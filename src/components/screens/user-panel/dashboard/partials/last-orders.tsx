@@ -1,5 +1,5 @@
 import { ChevronLeft } from 'lucide-react';
-import { Orders, User } from '../../../../../types/user.types';
+import { Orders } from '../../../../../types/user.types';
 import { localAssetsUrl } from '../../../../../utils/constants';
 import { Link } from 'react-router-dom';
 import { toJalaliDate } from '../../../../../utils/helpers';
@@ -8,6 +8,8 @@ import useOrder from '../../../../../endpoints/useOrder';
 
 const LastOrders = () => {
     const { orders } = useOrder();
+
+    const lastThreeOrders = orders ? [...orders].reverse().slice(0, 3) : [];
 
     return (
         <div className="w-full rounded-md border bg-white px-6 py-6 shadow-sm transition-all xl:w-[40%]">
@@ -26,11 +28,12 @@ const LastOrders = () => {
 
             <div className="text-neutral-04 space-y-3 text-xs">
                 {orders ? (
-                    orders.length > 0 ? (
-                        orders.slice(0, 3).map((order: Orders) => (
+                    lastThreeOrders.length > 0 ? (
+                        lastThreeOrders.map((order: Orders) => (
                             <Link
+                                key={order.trackingCode}
                                 to={'/my-account/orders'}
-                                className="border-neutral-02 flex items-center gap-4 border-b pb-3"
+                                className="border-neutral-02 flex items-center gap-4 border-b pb-3 hover:bg-neutral-50 transition-colors"
                             >
                                 <img
                                     src={`${localAssetsUrl + order.products[0]?.product.images[0]}`}
@@ -58,7 +61,7 @@ const LastOrders = () => {
                             </Link>
                         ))
                     ) : (
-                        <p className="pt-4 text-center xl:!pt-20">محصولی یافت نشد</p>
+                        <p className="pt-4 text-center xl:!pt-20">سفارشی یافت نشد</p>
                     )
                 ) : (
                     <div className="flex items-center gap-4 border-b pb-3">
