@@ -13,7 +13,7 @@ import Blog from "./pages/blogs/blog/blog";
 import AboutUs from "./pages/about-us/about-us";
 
 import UserPanel from "./pages/UserPanel/layout";
-import Dashboard from "./pages/UserPanel/Index/Dashboard";
+import Dashboard from "./pages/UserPanel/dashboard/Dashboard";
 import Orders from "./pages/UserPanel/orders/Orders";
 import Favorites from "./pages/UserPanel/favorites/favorites";
 import Tickets from "./pages/UserPanel/tickets/tickets";
