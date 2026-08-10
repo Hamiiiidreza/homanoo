@@ -17,6 +17,7 @@ import Dashboard from "./pages/UserPanel/dashboard/Dashboard";
 import Orders from "./pages/UserPanel/orders/Orders";
 import Favorites from "./pages/UserPanel/favorites/favorites";
 import Tickets from "./pages/UserPanel/tickets/tickets";
+import Ticket from "./pages/UserPanel/tickets/ticket/ticket";
 import UserAccount from "./pages/UserPanel/user-account/user-account";
 
 import AdminPanel from "./pages/AdminPanel/Index";
@@ -51,6 +52,7 @@ const routes = [
             { path: "orders", element: <Orders /> },
             { path: 'favorites', element: <Favorites /> },
             { path: "tickets", element: <Tickets /> },
+            { path: 'tickets/:id', element: <Ticket /> },
             { path: "user-account", element: <UserAccount /> },
         ]
     },
