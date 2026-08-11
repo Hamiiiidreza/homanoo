@@ -1,22 +1,7 @@
-import React from 'react'
-import PageHierarchy from '../../components/modules/Page-Hierarchy/page-hierarchy'
-import ContactUsFormPage from '../../components/templates/contact-us-form-page/contact-us-form-page';
-import Container from '../../components/modules/container';
+import ContactUsScreen from '../../components/screens/contact-us/contact-us-screen';
 
 function ContactUs() {
-  return (
-    < >
-      <Container >
-        <PageHierarchy
-          items={[
-            "خانه",
-            "تماس با ما",
-          ]}
-        />
-        <ContactUsFormPage />
-      </Container>
-    </>
-  )
+  return <ContactUsScreen />;
 }
 
 export default ContactUs;
