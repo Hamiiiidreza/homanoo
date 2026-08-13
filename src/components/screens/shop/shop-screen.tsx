@@ -42,7 +42,7 @@ const ShopScreen = () => {
                                 variant="server"
                                 key="shop"
                                 page={data.page}
-                                limit={5}
+                                limit={9}
                                 totalItems={data.total}
                             />
                         </div>

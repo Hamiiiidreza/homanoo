@@ -29,7 +29,7 @@ const useShop = (filters?: Filters) => {
                 params.append('inStock', 'true');
             }
             if (true) {
-                params.append('limit', '5');
+                params.append('limit', '9');
             }
             if (getParam('page') as string) {
                 params.append('page', getParam('page') as string);

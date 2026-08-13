@@ -61,7 +61,7 @@ const BlogsScreen = () => {
                                     <BlogCard key={blog.slug} {...blog} />
                                 ))}
                             </div>
-                            <PaginationWrapper limit={2} key={'blogs'} page={data.page} totalItems={data.total} />
+                            <PaginationWrapper limit={4} key={'blogs'} page={data.page} totalItems={data.total} />
 
                         </div>
                     ) : <p className='text-center pt-20 w-full text-3xl'>مقاله ای یافت نشد</p>
