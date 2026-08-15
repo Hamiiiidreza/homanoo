@@ -169,6 +169,7 @@ export const useUser = () => {
         isPending,
         isLoading,
         editUsermutation,
+        editUserMutationPending: editUsermutation.isPending,
         changePasswordMutation,
         createAddressMutation,
         deleteAddressMutation,
