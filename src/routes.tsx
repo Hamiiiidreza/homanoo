@@ -18,7 +18,7 @@ import Orders from "./pages/UserPanel/orders/Orders";
 import Favorites from "./pages/UserPanel/favorites/favorites";
 import Tickets from "./pages/UserPanel/tickets/tickets";
 import Ticket from "./pages/UserPanel/tickets/ticket/ticket";
-import UserAccount from "./pages/UserPanel/user-account/user-account";
+import UserAccount from "./pages/UserPanel/account/account";
 
 import AdminPanel from "./pages/AdminPanel/Index";
 import AdminDashboard from "./pages/AdminPanel/Index/admin-dashboard";
@@ -53,7 +53,7 @@ const routes = [
             { path: 'favorites', element: <Favorites /> },
             { path: "tickets", element: <Tickets /> },
             { path: 'tickets/:id', element: <Ticket /> },
-            { path: "user-account", element: <UserAccount /> },
+            { path: "account", element: <UserAccount /> },
         ]
     },
     {
