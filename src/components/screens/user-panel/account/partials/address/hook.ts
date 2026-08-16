@@ -31,6 +31,12 @@ const useAddress = () => {
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      province: '',
+      city: '',
+      postalCode: '',
+      address: '',
+    },
   });
 
   const selectedProvince = watch('province');
