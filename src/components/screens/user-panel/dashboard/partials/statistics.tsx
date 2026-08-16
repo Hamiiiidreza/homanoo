@@ -16,7 +16,7 @@ const Statistics = ({ data }: { data: User | undefined }) => {
             title: 'آدرس‌های من',
             count: data?.addresses.length,
             icon: <MapPin />,
-            route: 'user-account',
+            route: 'account',
             desription: 'مدیریت آدرس ها',
         },
         {
