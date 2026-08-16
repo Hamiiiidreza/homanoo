@@ -37,15 +37,19 @@ const AccountScreen = () => {
         control,
         handleSubmit,
         reset,
-        formState: { errors },
+        formState: { errors, isDirty },
     } = useForm<FormValues>({
         defaultValues: {},
     });
 
     const onSubmit = (data: FormValues) => {
-        editUsermutation.mutate(data);
+        editUsermutation.mutate(data, {
+            onSuccess: () => {
+                reset(data);
+            },
+        });
     };
-
+    
     useEffect(() => {
         if (data) {
             reset({
@@ -75,18 +79,11 @@ const AccountScreen = () => {
             </div>
 
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
-                <div className="order-2 mt-8 space-y-6 sm:!mt-0 lg:order-1">
+                <div className="order-1 xl:order-2">
                     <ProfileCard />
-                    <div className="space-y-4 rounded-md border-t bg-white pt-6 text-center transition-all sm:!border-x sm:!border-b sm:!p-4 sm:!shadow-lg">
-                        <h2 className="font-VazirBold text-neutral-07 mb-4 text-right text-lg">
-                            سایر اطلاعات
-                        </h2>
-                        <ChangePasswordModal />
-                        <AddressModal />
-                    </div>
                 </div>
 
-                <div className="rounded-md bg-white transition-all sm:!border sm:!p-6 sm:!shadow-lg md:col-span-2">
+                <div className="order-2 rounded-md bg-white transition-all sm:!border sm:!p-6 sm:!shadow-lg md:col-span-2 xl:order-1 xl:row-span-2">
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <div className="flex flex-col gap-2">
@@ -94,16 +91,22 @@ const AccountScreen = () => {
                                     نام و نام خانوادگی
                                 </label>
 
-                                <input
-                                    className="border-neutral-03 rounded-md border p-2 text-sm text-gray-600"
-                                    {...register('name', {
-                                        required: 'نام و نام خانوادگی الزامی است',
-                                        minLength: {
-                                            value: 3,
-                                            message: 'حداقل ۳ کاراکتر وارد کنید',
-                                        },
-                                    })}
-                                />
+                                <div className="relative">
+                                    <User
+                                        size={20}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-color-blue pointer-events-none"
+                                    />
+                                    <input
+                                        className="border-neutral-03 rounded-md border p-2 pr-10 text-sm text-gray-600 w-full"
+                                        {...register('name', {
+                                            required: 'نام و نام خانوادگی الزامی است',
+                                            minLength: {
+                                                value: 3,
+                                                message: 'حداقل ۳ کاراکتر وارد کنید',
+                                            },
+                                        })}
+                                    />
+                                </div>
 
                                 {errors.name && (
                                     <span className="scroll-pt-2.5 text-sm text-red-500">
@@ -116,16 +119,21 @@ const AccountScreen = () => {
                                 <label className="font-VazirMedium text-neutral-07 text-sm">
                                     کد ملی
                                 </label>
-                                <input
-                                    className="border-neutral-03 rounded-md border p-2 text-sm text-gray-600"
-                                    {...register('nationalCode', {
-                                        pattern: {
-                                            value: /^\d{10}$/,
-                                            message: 'کد ملی باید دقیقا ۱۰ رقم باشد',
-                                        },
-                                    })}
-                                />
-
+                                <div className="relative">
+                                    <CreditCard
+                                        size={18}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-color-blue pointer-events-none"
+                                    />
+                                    <input
+                                        className="border-neutral-03 rounded-md border p-2 pr-10 text-sm text-gray-600 w-full"
+                                        {...register('nationalCode', {
+                                            pattern: {
+                                                value: /^\d{10}$/,
+                                                message: 'کد ملی باید دقیقا ۱۰ رقم باشد',
+                                            },
+                                        })}
+                                    />
+                                </div>
                                 {errors.nationalCode && (
                                     <span className="scroll-pt-2.5 text-sm text-red-500">
                                         {errors.nationalCode.message}
@@ -137,18 +145,23 @@ const AccountScreen = () => {
                                 <label className="font-VazirMedium text-neutral-07 text-sm">
                                     ایمیل
                                 </label>
-
-                                <input
-                                    className="border-neutral-03 rounded-md border p-2 text-sm text-gray-600"
-                                    type="email"
-                                    {...register('email', {
-                                        required: 'ایمیل الزامی است',
-                                        pattern: {
-                                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                            message: 'ایمیل معتبر نیست',
-                                        },
-                                    })}
-                                />
+                                <div className="relative">
+                                    <Mail
+                                        size={18}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-color-blue pointer-events-none"
+                                    />
+                                    <input
+                                        className="border-neutral-03 rounded-md border p-2 pr-10 text-sm text-gray-600 w-full"
+                                        type="email"
+                                        {...register('email', {
+                                            required: 'ایمیل الزامی است',
+                                            pattern: {
+                                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                                message: 'ایمیل معتبر نیست',
+                                            },
+                                        })}
+                                    />
+                                </div>
                                 {errors.email && (
                                     <span className="scroll-pt-2.5 text-sm text-red-500">
                                         {errors.email.message}
@@ -160,28 +173,30 @@ const AccountScreen = () => {
                                 <label className="font-VazirMedium text-neutral-07 text-sm">
                                     تاریخ تولد
                                 </label>
-
-                                <Controller
-                                    name="birthDate"
-                                    control={control}
-                                    rules={{
-                                        required: 'تاریخ تولد الزامی است',
-                                    }}
-                                    render={({ field }) => (
-                                        <DatePicker
-                                            inputClass="border-neutral-03 rounded-md border p-2 text-sm text-gray-600"
-                                            calendar={persian}
-                                            locale={persian_fa}
-                                            value={field.value}
-                                            onChange={(date) => {
-                                                field.onChange(date?.format('YYYY/MM/DD') || '');
-                                            }}
-                                            format="YYYY/MM/DD"
-                                            calendarPosition="bottom-right"
-                                        />
-                                    )}
-                                />
-
+                                <div className="relative">
+                                    <Calendar
+                                        size={18}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-color-blue pointer-events-none z-10"
+                                    />
+                                    <Controller
+                                        name="birthDate"
+                                        control={control}
+                                        rules={{ required: 'تاریخ تولد الزامی است' }}
+                                        render={({ field }) => (
+                                            <DatePicker
+                                                inputClass="border-neutral-03 rounded-md border p-2 pr-10 text-sm text-gray-600 w-full"
+                                                calendar={persian}
+                                                locale={persian_fa}
+                                                value={field.value}
+                                                onChange={(date) => {
+                                                    field.onChange(date?.format('YYYY/MM/DD') || '');
+                                                }}
+                                                format="YYYY/MM/DD"
+                                                calendarPosition="bottom-right"
+                                            />
+                                        )}
+                                    />
+                                </div>
                                 {errors.birthDate && (
                                     <span className="scroll-pt-2.5 text-sm text-red-500">
                                         {errors.birthDate.message}
@@ -193,27 +208,33 @@ const AccountScreen = () => {
                                 <label className="font-VazirMedium text-neutral-07 text-sm">
                                     شماره موبایل
                                 </label>
-
-                                <input
-                                    className="border-neutral-03 rounded-md border p-2 text-sm text-gray-600"
-                                    dir="ltr"
-                                    {...register('phone', {
-                                        required: 'شماره موبایل الزامی است',
-                                        pattern: {
-                                            value: /^09\d{9}$/,
-                                            message: 'شماره موبایل معتبر نیست',
-                                        },
-                                    })}
-                                />
+                                <div className="relative">
+                                    <Phone
+                                        size={18}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-color-blue pointer-events-none"
+                                    />
+                                    <input
+                                        className="border-neutral-03 rounded-md border p-2 pr-10 text-sm text-gray-600 w-full"
+                                        dir="ltr"
+                                        {...register('phone', {
+                                            required: 'شماره موبایل الزامی است',
+                                            pattern: {
+                                                value: /^09\d{9}$/,
+                                                message: 'شماره موبایل معتبر نیست',
+                                            },
+                                        })}
+                                    />
+                                </div>
                                 {errors.phone && (
                                     <span className="scroll-pt-2.5 text-sm text-red-500">
                                         {errors.phone.message}
                                     </span>
                                 )}
                             </div>
+
                         </div>
 
-                        <Button type="submit" variant={'main'} className="mt-6 w-full">
+                        <Button type="submit" variant={'main'} className="mt-6 w-full" disabled={!isDirty}>
                             {editUserMutationPending ? (
                                 <Loader className="mx-auto animate-spin" />
                             ) : (
@@ -222,7 +243,16 @@ const AccountScreen = () => {
                         </Button>
                     </form>
                 </div>
+
+                <div className="order-3 space-y-4 rounded-md border-t bg-white pt-6 text-center transition-all sm:!border-x sm:!border-b sm:!p-4 sm:!shadow-lg xl:order-3">
+                    <h2 className="font-VazirBold text-neutral-07 mb-4 text-right text-lg">
+                        سایر اطلاعات
+                    </h2>
+                    <ChangePasswordModal />
+                    <AddressModal />
+                </div>
             </div>
+
         </section>
     );
 };
