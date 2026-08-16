@@ -55,7 +55,7 @@ export const useRegister = (endFunction?: () => void) => {
         });
     };
 
-    return { register, errors, handleSubmit, onSubmit };
+    return { register, errors, handleSubmit, isPending: mutation.isPending, onSubmit };
 };
 
 const loginSchema = z.object({
@@ -90,5 +90,5 @@ export const useLogin = (endFunction?: () => void) => {
         });
     };
 
-    return { register, errors, handleSubmit, onSubmit };
+    return { register, errors, handleSubmit, isPending: mutation.isPending, onSubmit };
 };

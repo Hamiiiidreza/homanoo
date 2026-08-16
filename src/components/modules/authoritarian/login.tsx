@@ -1,23 +1,25 @@
 import { DialogDescription, DialogHeader, DialogTitle } from '../../ui/dialog';
 import { Button } from '../../ui/button';
 import { useLogin } from './hook';
+import { Loader } from 'lucide-react';
 
 const Login = ({
   setStep,
   endFunction,
 }: {
   setStep: (val: string) => void;
-  endFunction?: () => void | undefined;
+  endFunction?: () => void;
 }) => {
-  const { register, errors, handleSubmit, onSubmit } = useLogin(endFunction);
+  const { register, errors, handleSubmit, onSubmit, isPending } =
+    useLogin(endFunction);
 
   return (
     <>
       <DialogHeader>
         <DialogTitle>
-          <img className="mx-auto w-60 h-31" src="/Images/logo-3.png" alt="" />
+          <img className="mx-auto h-12" src="/Images/logo.jpg" alt="" />
         </DialogTitle>
-        <DialogDescription className="w-full text-center text-gray-400 -mt-5">
+        <DialogDescription className="w-full text-center text-gray-400">
           برای استفاده از خدمات ما، شماره موبایل خود را وارد کنید.
         </DialogDescription>
       </DialogHeader>
@@ -57,7 +59,7 @@ const Login = ({
             variant={'main'}
             type="submit"
           >
-            ورود
+            {isPending ? <Loader className="mx-auto animate-spin" /> : 'ورود'}
           </Button>
           <p
             onClick={() => setStep('register')}

@@ -1,3 +1,4 @@
+import { Loader } from 'lucide-react';
 import { Button } from '../../ui/button';
 import { DialogDescription, DialogHeader, DialogTitle } from '../../ui/dialog';
 import { useRegister } from './hook';
@@ -7,17 +8,17 @@ const Register = ({
     endFunction,
 }: {
     setStep: (val: string) => void;
-    endFunction?: () => void | undefined;
+    endFunction?: () => void;
 }) => {
-    const { register, errors, handleSubmit, onSubmit } = useRegister(endFunction);
+    const { register, errors, handleSubmit, isPending, onSubmit } = useRegister(endFunction);
 
     return (
         <>
             <DialogHeader>
                 <DialogTitle>
-                    <img className="mx-auto w-60 h-31" src="/Images/logo-3.png" alt="" />
+                    <img className="mx-auto h-12" src="/Images/logo.jpg" alt="" />
                 </DialogTitle>
-                <DialogDescription className="w-full text-center text-gray-400 -mt-5">
+                <DialogDescription className="w-full text-center text-gray-400">
                     لطفا فرم زیر را تکمیل کنید
                 </DialogDescription>
             </DialogHeader>
@@ -73,7 +74,7 @@ const Register = ({
                         variant={'main'}
                         type="submit"
                     >
-                        ثبت‌نام
+                        {isPending ? <Loader className="mx-auto animate-spin" /> : 'ثبت‌نام'}
                     </Button>
                     <p
                         onClick={() => setStep('login')}
