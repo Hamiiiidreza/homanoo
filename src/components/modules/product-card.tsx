@@ -8,6 +8,8 @@ import useCart from '../../endpoints/useCart';
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import useFavorite from '../../endpoints/useFavorite';
+import { useUser } from '../../endpoints/useUser';
+import AuthoritarianSteps from './authoritarian/authoritarian-steps';
 
 const ProductCard = ({
   data: {
@@ -29,13 +31,29 @@ const ProductCard = ({
 }) => {
   const { mutation } = useCart();
   const { mutation: removeFromFavorites } = useFavorite();
+  const { data: user } = useUser();
   const [isInCartStatus, setIsInCartStatus] = useState(isInCart);
+  const [showLoginForm, setShowLoginForm] = useState(false);
   const queryClient = useQueryClient();
+
+  const addProductToCart = () => {
+    mutation.mutate(
+      { color: String(colors[0]?.code), code: code },
+      {
+        onSuccess() {
+          setIsInCartStatus(true);
+          queryClient.invalidateQueries({ queryKey: ['me'] });
+        },
+      },
+    );
+  };
+
   return (
-    <div
-      key={code}
-      className="group relative block h-max w-full rounded-xl shadow transition-all hover:shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
-    >
+    <>
+      <div
+        key={code}
+        className="group relative block h-max w-full rounded-xl shadow transition-all hover:shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
+      >
       <Link
         to={`/product/${code}/${String(slug).replaceAll(' ', '-')}`}
         className={`relative w-full bg-cover bg-center transition-all ${!isPanel ? 'group-hover:blur-xs' : ''
@@ -52,17 +70,13 @@ const ProductCard = ({
         <div className="absolute top-1/2 left-1/2 flex -translate-x-1/2 items-center justify-end gap-2 pt-0 opacity-0 group-hover:opacity-100">
           {!isInCartStatus ? (
             <Button
-              onClick={() =>
-                mutation.mutate(
-                  { color: String(colors[0]?.code), code: code },
-                  {
-                    onSuccess() {
-                      setIsInCartStatus(true);
-                      queryClient.invalidateQueries({ queryKey: ['me'] });
-                    },
-                  },
-                )
-              }
+              onClick={() => {
+                if (!user) {
+                  setShowLoginForm(true);
+                  return;
+                }
+                addProductToCart();
+              }}
               className="tracking-button-s shadow-shadow-01 flex h-[40px] transform cursor-pointer items-center justify-center gap-2 rounded-lg border border-black bg-white px-2 py-3 text-sm text-black transition-all hover:bg-white hover:opacity-70"
             >
               افزودن به سبد خرید
@@ -138,7 +152,19 @@ const ProductCard = ({
       ) : (
         ''
       )}
-    </div>
+      </div>
+
+      {showLoginForm ? (
+        <AuthoritarianSteps
+          setIsOpen={setShowLoginForm}
+          endFunction={() => {
+            addProductToCart();
+            setShowLoginForm(false);
+          }}
+          isOpen={true}
+        />
+      ) : null}
+    </>
   );
 };
 

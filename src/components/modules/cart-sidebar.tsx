@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { getCartTotalPrice } from '../../utils/helpers';
 
 type CartSidebarProps = {
-    data: User;
+    data: User | undefined;
     open: boolean;
     onClose: () => void;
 };
@@ -22,14 +22,14 @@ export default function CartSidebar({ data, open, onClose }: CartSidebarProps) {
     }, [data]);
 
     return (
-        <div className={`fixed inset-0 z-40 ${open ? 'visible' : 'invisible'}`}>
+        <div className={`fixed inset-0 z-[1000] ${open ? 'visible' : 'invisible'}`}>
             <div
                 onClick={onClose}
                 className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0'
                     }`}
             />
             <aside
-                className={`fixed top-0 right-0 z-50 flex h-screen w-[400px] transform flex-col rounded-l-2xl bg-white px-6 py-6 shadow-lg transition-transform duration-300 ease-in-out ${open ? 'translate-x-0' : 'translate-x-full'} `}
+                className={`xs:!w-[400px] fixed top-0 right-0 z-50 flex h-screen w-[340px] transform flex-col rounded-l-2xl bg-white px-6 py-6 shadow-lg transition-transform duration-300 ease-in-out ${open ? 'translate-x-0' : 'translate-x-full'} `}
             >
                 <div className="mb-10 flex w-full items-center justify-between">
                     <h1 className="tracking-headline-6 text-[28px] leading-[34px] text-black/900 transition-all">
@@ -62,7 +62,7 @@ export default function CartSidebar({ data, open, onClose }: CartSidebarProps) {
 
                 {/* Buttons */}
                 <div className="mt-4 flex flex-col gap-4">
-                    <Link to="/checkout" className="w-full">
+                    <Link to="/cart" className="w-full">
                         <Button className="bg-main hover:!bg-main h-12 w-full cursor-pointer transition-opacity hover:opacity-70">
                             تکمیل سفارش
                         </Button>

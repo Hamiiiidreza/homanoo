@@ -19,12 +19,13 @@ const QuantityControls = ({
     showBtn?: boolean;
     className?: string;
 }) => {
+
     const { updateQuantityMutation, removeItemMutation } = useCart();
     const [quantity, setQuantity] = useState(data.quantity);
     const queryClinet = useQueryClient();
 
     return (
-        <div className={`${className ?? ''} flex flex-col items-center gap-2`}>
+        <div className={`${className ? className : ''} flex flex-col items-center gap-2`}>
             {showBtn ? (
                 <Link className="w-full" to={'/cart'}>
                     <Button className="lg:!w-full" variant={'outline'}>
@@ -35,7 +36,7 @@ const QuantityControls = ({
                 ''
             )}
             <div
-                className={`${updateQuantityMutation.isPending ? 'opacity-35' : ''} border-neutral-04 flex h-8 w-20 items-center justify-between gap-3 rounded-md border px-2 transition-opacity`}
+                className={`${updateQuantityMutation.isPending ? 'opacity-35' : ''} border-neutral-04 flex h-8 w-full items-center justify-between gap-3 rounded-md border px-2 transition-opacity`}
             >
                 <Plus
                     className="cursor-pointer text-black/900"
@@ -78,7 +79,7 @@ const QuantityControls = ({
                         },
                     })
                 }
-                className="cursor-pointer rounded-md bg-red-600 px-3 py-2 transition-opacity hover:opacity-75"
+                className="flex w-full cursor-pointer justify-center rounded-md bg-red-600 px-3 py-2 transition-opacity hover:opacity-75"
             >
                 <Trash size={17} className="stroke-white" />
             </div>
