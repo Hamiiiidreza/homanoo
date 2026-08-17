@@ -32,7 +32,7 @@ const Footer = () => (
                         فروشگاه
                     </Link>
                     <Link
-                        to="/articles"
+                        to="/blogs"
                         className="font-VazirRegular text-base text-neutral-01"
                     >
                         مقالات
