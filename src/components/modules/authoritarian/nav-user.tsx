@@ -13,7 +13,8 @@ const NavUser = ({ user, isLoading }: { user: User | undefined; isLoading: boole
       ) : user ? (
         <Link to={'/my-account/dashboard'}>
           <Button variant={'mainShaded'}>
-            پنل کاربری <UserIcon />
+            <span className="hidden sm:inline">پنل کاربری</span>
+            <UserIcon />
           </Button>
         </Link>
       ) : (
