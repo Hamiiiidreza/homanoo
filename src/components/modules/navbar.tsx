@@ -4,8 +4,9 @@ import Badge from '../ui/badge';
 import CartSidebar from './cart-sidebar';
 import MobileMenu from './mobile-menu';
 import NavUser from './authoritarian/nav-user';
-import { ShoppingCartIcon } from 'lucide-react';
+import { SearchIcon, ShoppingCartIcon } from 'lucide-react';
 import { useUser } from '../../endpoints/useUser';
+import Search from '../screens/home/partials/search';
 
 type MenuItem = {
   name: string;
@@ -21,6 +22,7 @@ const Navbar = () => {
     { name: 'تماس با ما', path: '/contact-us' },
   ]);
   const [openCart, setOpenCart] = useState<boolean>(false);
+  const [openSearch, setOpenSearch] = useState<boolean>(false);
   const [count, setCount] = useState<null | number>(null);
   const location = useLocation();
   const { data: user, isLoading } = useUser();
@@ -58,6 +60,16 @@ const Navbar = () => {
         </ul>
 
         <div className="flex items-center gap-4 py-4">
+          {location.pathname === '/' && (
+            <button
+              type="button"
+              aria-label="جست‌وجو"
+              onClick={() => setOpenSearch(true)}
+              className="flex cursor-pointer items-center justify-center"
+            >
+              <SearchIcon />
+            </button>
+          )}
           <div
             onClick={() => (count ? setOpenCart(true) : router('/cart'))}
             className="relative flex cursor-pointer items-center justify-center gap-2"
@@ -81,6 +93,9 @@ const Navbar = () => {
         open={openCart}
         onClose={() => setOpenCart(false)}
       />
+      {location.pathname === '/' && (
+        <Search open={openSearch} onClose={() => setOpenSearch(false)} />
+      )}
     </div>
   );
 };
