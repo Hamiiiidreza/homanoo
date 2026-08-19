@@ -16,7 +16,7 @@ const Categories = ({ data }: { data: { slug: string }[] }) => {
           <div className="block w-full md:!hidden">
             <CategoryCard
               data={data?.find((c) => c.slug == 'bedRoom')}
-              imageClass="!mix-blend-lighten"
+              imageClass="sepia-100"
               isTop={false}
             />
           </div>
