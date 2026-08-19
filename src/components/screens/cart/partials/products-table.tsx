@@ -10,6 +10,9 @@ import MobileProductSkeleton from '../../product/partials/mobile-product-skeleto
 const ProductsTable = () => {
     const { data, isPending } = useUser();
 
+    const cartItems = data?.cart ?? [];
+    const hasItems = cartItems.length > 0;
+
     return (
         <div className="flex w-full flex-col gap-10 lg:w-4/6">
             <div className="flex flex-col gap-10">
@@ -27,9 +30,9 @@ const ProductsTable = () => {
                     </div>
 
                     {!isPending ? (
-                        data?.cart.length > 0 ? (
-                            data?.cart.map((item: CartItem) => (
-                                <DesktopProductCard {...item} />
+                        hasItems ? (
+                            [...cartItems].reverse().map((item: CartItem) => (
+                                <DesktopProductCard key={item._id} {...item} />
                             ))
                         ) : (
                             <p className="w-full pt-5 text-center">محصولی یافت نشد</p>
@@ -50,9 +53,9 @@ const ProductsTable = () => {
                     <div className="space-y-6">
 
                         {!isPending ? (
-                            data?.cart.length > 0 ? (
-                                data?.cart.map((item: CartItem) => (
-                                    <MobileProductCard isCartPage item={item} />
+                            hasItems ? (
+                                [...cartItems].reverse().map((item: CartItem) => (
+                                    <MobileProductCard key={item._id} item={item} />
                                 ))
                             ) : (
                                 <p className="w-full pt-0 text-center">محصولی یافت نشد</p>

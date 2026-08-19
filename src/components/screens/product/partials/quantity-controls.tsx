@@ -1,9 +1,9 @@
 import { Minus, Plus, Trash } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '../../../ui/button';
-import { CartItem } from '../../../../types/user.types';
+import { CartItem, User } from '../../../../types/user.types';
 import useCart from '../../../../endpoints/useCart';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 const QuantityControls = ({
@@ -24,6 +24,27 @@ const QuantityControls = ({
     const [quantity, setQuantity] = useState(data.quantity);
     const queryClinet = useQueryClient();
 
+    useEffect(() => {
+        setQuantity(data.quantity);
+    }, [data.quantity]);
+
+    const syncUserCart = (nextQuantity: number) => {
+        queryClinet.setQueryData<User | undefined>(['me'], (user) => {
+            if (!user) {
+                return user;
+            }
+
+            return {
+                ...user,
+                cart: user.cart.map((item) =>
+                    item._id === data._id
+                        ? { ...item, quantity: nextQuantity }
+                        : item,
+                ),
+            };
+        });
+    };
+
     return (
         <div className={`${className ? className : ''} flex flex-col items-center gap-2`}>
             {showBtn ? (
@@ -36,7 +57,7 @@ const QuantityControls = ({
                 ''
             )}
             <div
-                className={`${updateQuantityMutation.isPending ? 'opacity-35' : ''} border-neutral-04 flex h-8 w-full items-center justify-between gap-3 rounded-md border px-2 transition-opacity`}
+                className={`${updateQuantityMutation.isPending ? 'pointer-events-none opacity-35' : ''} border-neutral-04 flex h-8 w-full items-center justify-between gap-3 rounded-md border px-2 transition-opacity`}
             >
                 <Plus
                     className="cursor-pointer text-black/900"
@@ -46,7 +67,9 @@ const QuantityControls = ({
                             { id: data._id, action: 'plus' },
                             {
                                 onSuccess: () => {
-                                    setQuantity((p) => p + 1);
+                                    const nextQuantity = quantity + 1;
+                                    setQuantity(nextQuantity);
+                                    syncUserCart(nextQuantity);
                                     endUpdateQuantityHandler?.();
                                 },
                             },
@@ -62,7 +85,9 @@ const QuantityControls = ({
                             { id: data._id, action: 'minus' },
                             {
                                 onSuccess: () => {
-                                    setQuantity((p) => p - 1);
+                                    const nextQuantity = quantity - 1;
+                                    setQuantity(nextQuantity);
+                                    syncUserCart(nextQuantity);
                                     endUpdateQuantityHandler?.();
                                 },
                             },

@@ -7,12 +7,10 @@ const MobileProductCard = ({
     item,
     onClose,
     total,
-    isCartPage,
 }: {
     item: CartItem;
     onClose?: () => void;
     total?: number;
-    isCartPage?: boolean;
 }) => {
     const queryclient = useQueryClient();
     return item ? (
@@ -41,7 +39,7 @@ const MobileProductCard = ({
             </div>
             <QuantityControls
                 endUpdateQuantityHandler={() => {
-                    isCartPage ? queryclient.invalidateQueries({ queryKey: ['me'] }) : '';
+                    queryclient.refetchQueries({ queryKey: ['me'] });
                 }}
                 endFunctionHandler={() => {
                     if (total == 1) {
