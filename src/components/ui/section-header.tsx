@@ -22,7 +22,7 @@ const SectionHeader = ({
     return (
         <div
             className={`
-                flex justify-between items-end
+                flex justify-between items-center
                 ${mobileLayout === 'seprate' ? 'md:flex' : 'flex'}
                 ${mbClass}`}
         >
