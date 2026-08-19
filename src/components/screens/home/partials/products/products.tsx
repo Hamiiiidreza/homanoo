@@ -74,17 +74,17 @@ const Products = ({ data }: { data?: Product[] }) => {
         />
       </div> */}
 
-            <div className="flex justify-start mt-6 md:hidden">
-                <Link
-                    to=""
-                    className="flex items-center gap-1 pb-1 mt-4 md:mt-0 transition-all hover:shadow-[0_4px_4px_rgba(0, 0, 0, 0.25)]"
-                >
-                    <span className=" text-sm text-neutral-07">
-                        سایر محصولات
-                    </span>
-                    <GoArrowLeft className="size-5" />
-                </Link>
-            </div>
+            {/* <div className="flex justify-start mt-6 md:hidden">
+        <Link
+          to=""
+          className="flex items-center gap-1 pb-1 mt-4 md:mt-0 transition-all hover:shadow-[0_4px_4px_rgba(0, 0, 0, 0.25)]"
+        >
+          <span className=" text-sm text-neutral-07">
+            سایر محصولات
+          </span>
+          <GoArrowLeft className="size-5" />
+        </Link>
+      </div> */}
         </section>
     );
 };
