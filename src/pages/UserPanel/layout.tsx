@@ -1,4 +1,4 @@
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Bell, Menu, LogOut, ShoppingCartIcon } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '../../components/ui/sheet';
 import { useUser } from '../../endpoints/useUser';
@@ -15,12 +15,19 @@ const UserPanelLayout = () => {
   const [count, setCount] = useState<null | number>(null);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  console.log(data);
+  const { pathname } = useLocation();
+  const [open, setOpen] = useState(false);
+
   useEffect(() => {
+    if (!Cookies.get('token')) navigate('/');
     if (data) {
       setCount(data.cart.length);
     } else if (!isPending) navigate('/');
   }, [data]);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   return (
     <div className="bg-neutral-03 flex min-h-screen">
@@ -40,15 +47,15 @@ const UserPanelLayout = () => {
                   به پنل کاربری خود در گالری هومانو خوش آمدید.
                 </p>
               </div>
-              <Sheet>
-                <SheetTrigger asChild>
+              <Sheet onOpenChange={setOpen} open={open}>
+                <SheetTrigger>
                   <button className="lg:hidden">
                     <Menu />
                   </button>
                 </SheetTrigger>
                 <SheetContent
                   side="right"
-                  className="w-[280px] border-none bg-transparent p-0 shadow-none"
+                  className="z-[9999] w-[280px] border-none bg-transparent p-0 shadow-none"
                 >
                   <Sidebar className="!block !rounded-l-2xl lg:!hidden" />
                 </SheetContent>
@@ -77,7 +84,10 @@ const UserPanelLayout = () => {
                   ''
                 )}
               </Link>
-              <div onClick={()=>toast.warning('اعلانی یافت نشد')} className="relative flex cursor-pointer items-center justify-center gap-2">
+              <div
+                onClick={() => toast.warning('اعلانی یافت نشد')}
+                className="relative flex cursor-pointer items-center justify-center gap-2"
+              >
                 <Bell
                   size={20}
                   className="hover:text-main cursor-pointer transition-all"
