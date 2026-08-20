@@ -1,6 +1,7 @@
 import {
     Book,
     Home,
+    Info ,
     LogOut,
     Menu,
     NotepadText,
@@ -40,13 +41,18 @@ const MobileMenu = () => {
                             <UserIcon size={22} />
                             <Link
                                 className="block text-[17px] font-thin"
-                                to={'/user-panel/dashboard'}
+                                to={'/my-account/dashboard'}
                             >
                                 پنل کاربری{' '}
                             </Link>
                         </li>
                     ) : (
-                        <AuthoritarianSteps endFunction={() => setOpen(false)} isMenu />
+                        <li className="flex items-center gap-2">
+                            <AuthoritarianSteps
+                                endFunction={() => setOpen(false)}
+                                isMenu
+                            />
+                        </li>
                     )}
                     <li
                         onClick={() => setOpen(false)}
@@ -61,7 +67,7 @@ const MobileMenu = () => {
                         onClick={() => setOpen(false)}
                         className="flex items-center gap-2"
                     >
-                        <Home size={22} />
+                        <Info  size={22} />
                         <Link className="block text-[17px] font-thin" to={'/about-us'}>
                             درباه ما
                         </Link>
